@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winter 2026 MAP Reading Analysis Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 1rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .nav-tab.highlight {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .nav-tab.highlight:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-value.success { color: var(--success); }
+        .stat-value.warning { color: var(--warning); }
+        .stat-value.danger { color: var(--danger); }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-container.short {
+            height: 300px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+        }
+
+        .three-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        th {
+            background: var(--gray-50);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-600);
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+
+        .insight-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-box.warning {
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+            border-left-color: var(--warning);
+        }
+
+        .insight-box.danger {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-left-color: var(--danger);
+        }
+
+        .insight-box.success {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-left-color: var(--success);
+        }
+
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-list li {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .recommendation-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rec-icon {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .rec-content h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .rec-content p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .metric-comparison {
+            display: flex;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+
+        .metric-box {
+            flex: 1;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .metric-box h4 {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-box .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .section-divider {
+            border-top: 2px solid var(--gray-200);
+            margin: 2rem 0;
+            padding-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header {
+                padding: 2rem 1rem;
+            }
+
+            header h1 {
+                font-size: 1.75rem;
+            }
+
+            .two-col, .three-col {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+
+            .metric-comparison {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Winter 2026 MAP Reading Analysis</h1>
+            <p>Comprehensive Reading Results | PreK - Grade 8 | January 2026</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">All Grades Overview</button>
+            <button class="nav-tab highlight" onclick="showSection('earlyyears')">Early Years Deep Dive</button>
+            <button class="nav-tab" onclick="showSection('patterns')">Pattern Analysis</button>
+            <button class="nav-tab" onclick="showSection('students')">Student Details</button>
+            <button class="nav-tab" onclick="showSection('recommendations')">Spring 2026 Action Plan</button>
+        </div>
+
+        <!-- All Grades Overview Section -->
+        <div id="overview" class="section active">
+            <div class="insight-box" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left-color: #0284c7;">
+                <div class="insight-title">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Understanding the Metrics
+                </div>
+                <p><strong>Two success measures:</strong> (1) <em>Met Prediction</em> = student achieved their individualized projected growth, and (2) <em>Met 2x Target</em> = student achieved the network-wide minimum goal of 2x growth.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">283</div>
+                    <div class="stat-label">Students with F-W Data</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value success">50.5%</div>
+                    <div class="stat-label">Met F-W Prediction</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value success">70.0%</div>
+                    <div class="stat-label">Met F-W 2x Target</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value warning">87</div>
+                    <div class="stat-label">Students with W-W Data</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value danger">23.0%</div>
+                    <div class="stat-label">Met W-W 2x Target</div>
+                </div>
+            </div>
+
+            <div class="insight-box success">
+                <div class="insight-title">Fall-Winter: Strong Overall Performance</div>
+                <p><strong>70% of students met the 2x growth target</strong> for Fall-to-Winter. Average actual growth (3.89x) exceeded predictions (3.59x). However, only 50.5% met their individual predictions - a few exceptional performers (10x-29x growth) skewed the average upward while many students missed by small amounts.</p>
+            </div>
+
+            <div class="insight-box danger">
+                <div class="insight-title">Winter-Winter: Critical Concern</div>
+                <p><strong>Only 23% met the 2x W-W target</strong> across all grades. Early Years is hit hardest at just 9.3% meeting 2x, while Upper Grades (G3-8) achieved 41.2%. This reflects summer learning loss that wasn't fully recovered.</p>
+            </div>
+
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">F-W Performance: Early Years vs Upper Grades</div>
+                    <div class="card-body">
+                        <div class="metric-comparison">
+                            <div class="metric-box">
+                                <h4>Early Years (K-G2)</h4>
+                                <div class="value" style="color: var(--warning);">43.4%</div>
+                                <p>Met Prediction (n=129)</p>
+                                <div class="value" style="color: var(--success); font-size: 1.5rem; margin-top: 0.5rem;">72.9%</div>
+                                <p>Met 2x Target</p>
+                            </div>
+                            <div class="metric-box">
+                                <h4>Upper Grades (G3-8)</h4>
+                                <div class="value" style="color: var(--success);">66.4%</div>
+                                <p>Met Prediction (n=110)</p>
+                                <div class="value" style="color: var(--success); font-size: 1.5rem; margin-top: 0.5rem;">71.8%</div>
+                                <p>Met 2x Target</p>
+                            </div>
+                        </div>
+                        <div class="insight-box warning" style="margin-top: 1rem; margin-bottom: 0;">
+                            <p><strong>Key Finding:</strong> Upper grades significantly outperform Early Years on meeting predictions (66.4% vs 43.4%), but both achieve similar 2x target rates (~72%). This suggests Early Years predictions may be set too high.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">W-W Performance: Early Years vs Upper Grades</div>
+                    <div class="card-body">
+                        <div class="metric-comparison">
+                            <div class="metric-box">
+                                <h4>Early Years (K-G2)</h4>
+                                <div class="value" style="color: var(--danger);">9.3%</div>
+                                <p>Met 2x Target (n=43)</p>
+                                <div class="value" style="color: var(--danger); font-size: 1.5rem; margin-top: 0.5rem;">1.21x</div>
+                                <p>Avg W-W Growth</p>
+                            </div>
+                            <div class="metric-box">
+                                <h4>Upper Grades (G3-8)</h4>
+                                <div class="value" style="color: var(--warning);">41.2%</div>
+                                <p>Met 2x Target (n=34)</p>
+                                <div class="value" style="color: var(--warning); font-size: 1.5rem; margin-top: 0.5rem;">1.77x</div>
+                                <p>Avg W-W Growth</p>
+                            </div>
+                        </div>
+                        <div class="insight-box danger" style="margin-top: 1rem; margin-bottom: 0;">
+                            <p><strong>Critical:</strong> Early Years W-W performance is severely lagging. Only 9.3% met the 2x target vs 41.2% for upper grades. This is the area requiring urgent intervention.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">F-W Performance by Grade Level (Age-Grade)</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="fwByGradeChart"></canvas>
+                    </div>
+                    <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray-600);"><strong>Note:</strong> This chart uses <em>age-grade</em> (the grade students should be in based on age), not mastery-based rostered grade. In Early Years, ~49% of students have a rostered grade that differs from their age-grade due to mastery-based progression.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">F-W Performance by Campus (Top 15 by Volume)</div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campus</th>
+                                <th>Students</th>
+                                <th>Avg Predicted</th>
+                                <th>Avg Actual</th>
+                                <th>Met Prediction</th>
+                                <th>Met 2x Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Alpha School Miami</td>
+                                <td>53</td>
+                                <td>3.55x</td>
+                                <td>3.88x</td>
+                                <td><span class="badge badge-success">52.8%</span></td>
+                                <td><span class="badge badge-success">71.7%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Austin</td>
+                                <td>50</td>
+                                <td>3.10x</td>
+                                <td>4.13x</td>
+                                <td><span class="badge badge-success">64.0%</span></td>
+                                <td><span class="badge badge-success">78.0%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Brownsville</td>
+                                <td>36</td>
+                                <td>2.24x</td>
+                                <td>4.11x</td>
+                                <td><span class="badge badge-success">61.1%</span></td>
+                                <td><span class="badge badge-success">69.4%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha High School</td>
+                                <td>36</td>
+                                <td>7.31x</td>
+                                <td>2.64x</td>
+                                <td><span class="badge badge-danger">36.1%</span></td>
+                                <td><span class="badge badge-warning">55.6%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Scottsdale</td>
+                                <td>17</td>
+                                <td>2.74x</td>
+                                <td>3.52x</td>
+                                <td><span class="badge badge-success">52.9%</span></td>
+                                <td><span class="badge badge-success">70.6%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Texas Sports Academy</td>
+                                <td>13</td>
+                                <td>2.98x</td>
+                                <td>4.60x</td>
+                                <td><span class="badge badge-warning">38.5%</span></td>
+                                <td><span class="badge badge-success">76.9%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Montessorium Cedar Park</td>
+                                <td>12</td>
+                                <td>2.81x</td>
+                                <td>4.48x</td>
+                                <td><span class="badge badge-success">58.3%</span></td>
+                                <td><span class="badge badge-success">83.3%</span></td>
+                            </tr>
+                            <tr style="background: #fee2e2;">
+                                <td><strong>Nova Academy Austin</strong></td>
+                                <td>11</td>
+                                <td>2.97x</td>
+                                <td>1.10x</td>
+                                <td><span class="badge badge-danger">0.0%</span></td>
+                                <td><span class="badge badge-danger">0.0%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School San Francisco</td>
+                                <td>10</td>
+                                <td>3.33x</td>
+                                <td>5.52x</td>
+                                <td><span class="badge badge-success">70.0%</span></td>
+                                <td><span class="badge badge-success">80.0%</span></td>
+                            </tr>
+                            <tr>
+                                <td>GT School</td>
+                                <td>9</td>
+                                <td>3.01x</td>
+                                <td>3.84x</td>
+                                <td><span class="badge badge-success">66.7%</span></td>
+                                <td><span class="badge badge-success">88.9%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha Anywhere Center</td>
+                                <td>9</td>
+                                <td>3.13x</td>
+                                <td>4.89x</td>
+                                <td><span class="badge badge-warning">44.4%</span></td>
+                                <td><span class="badge badge-success">66.7%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Santa Barbara</td>
+                                <td>7</td>
+                                <td>2.96x</td>
+                                <td>7.89x</td>
+                                <td><span class="badge badge-success">71.4%</span></td>
+                                <td><span class="badge badge-success">85.7%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Nova Academy Bastrop</td>
+                                <td>7</td>
+                                <td>3.32x</td>
+                                <td>3.22x</td>
+                                <td><span class="badge badge-danger">28.6%</span></td>
+                                <td><span class="badge badge-success">71.4%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Early Years Deep Dive Section -->
+        <div id="earlyyears" class="section">
+            <div class="insight-box danger">
+                <div class="insight-title">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Early Years: The Critical Focus Area
+                </div>
+                <p>Early Years (PreK-G2) is significantly underperforming compared to upper grades, especially on Winter-to-Winter growth. This section provides detailed analysis of the 177 Early Years Reading students.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">177</div>
+                    <div class="stat-label">Early Years Students</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value warning">43.4%</div>
+                    <div class="stat-label">Met F-W Prediction</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value success">72.9%</div>
+                    <div class="stat-label">Met F-W 2x Target</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value danger">19.4%</div>
+                    <div class="stat-label">Met W-W Prediction</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value danger">6.5%</div>
+                    <div class="stat-label">Met W-W 2x Target</div>
+                </div>
+            </div>
+
+            <div class="insight-box warning">
+                <div class="insight-title">Why Average Growth Exceeded Prediction Despite Low Individual Success</div>
+                <p>Average F-W growth (4.02x) exceeded the average prediction (3.52x), yet only 43.4% of students met their individual predictions. This apparent contradiction is explained by <strong>outlier skewing</strong>:</p>
+                <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                    <li>Top 10 performers achieved 11x-29x growth, pulling up the average dramatically</li>
+                    <li>The <strong>median</strong> student missed their prediction by 1.0x</li>
+                    <li>69 students (65.7%) missed their predictions, averaging -1.76x below target</li>
+                    <li>36 students (34.3%) met/exceeded predictions, averaging +4.80x above target</li>
+                </ul>
+            </div>
+
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">F-W Performance by Grade</div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Grade</th>
+                                    <th>Students</th>
+                                    <th>Met Prediction</th>
+                                    <th>Met 2x Target</th>
+                                    <th>Avg Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Kindergarten</td>
+                                    <td>28</td>
+                                    <td><span class="badge badge-danger">21.4%</span></td>
+                                    <td><span class="badge badge-success">76.9%</span></td>
+                                    <td>3.18x</td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 1</td>
+                                    <td>37</td>
+                                    <td><span class="badge badge-warning">32.4%</span></td>
+                                    <td><span class="badge badge-success">74.3%</span></td>
+                                    <td>4.00x</td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 2</td>
+                                    <td>40</td>
+                                    <td><span class="badge badge-warning">45.0%</span></td>
+                                    <td><span class="badge badge-success">69.1%</span></td>
+                                    <td>4.62x</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">W-W Performance by Grade</div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Grade</th>
+                                    <th>Students</th>
+                                    <th>Met Prediction</th>
+                                    <th>Met 2x Target</th>
+                                    <th>Avg Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Kindergarten</td>
+                                    <td>5</td>
+                                    <td><span class="badge badge-danger">20.0%</span></td>
+                                    <td><span class="badge badge-danger">20.0%</span></td>
+                                    <td>1.44x</td>
+                                </tr>
+                                <tr style="background: #fee2e2;">
+                                    <td><strong>Grade 1</strong></td>
+                                    <td>11</td>
+                                    <td><span class="badge badge-danger">0.0%</span></td>
+                                    <td><span class="badge badge-danger">0.0%</span></td>
+                                    <td>0.91x</td>
+                                </tr>
+                                <tr>
+                                    <td>Grade 2</td>
+                                    <td>15</td>
+                                    <td><span class="badge badge-warning">33.3%</span></td>
+                                    <td><span class="badge badge-danger">6.7%</span></td>
+                                    <td>1.31x</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="insight-box danger" style="margin-top: 1rem; margin-bottom: 0;">
+                            <p><strong>Grade 1 Crisis:</strong> 0% of Grade 1 students met either their W-W prediction OR the 2x target. Average growth was only 0.91x.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Early Years Campus Performance</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="eyCampusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">ClearFluency Adoption Impact</div>
+                <div class="card-body">
+                    <div class="insight-box warning">
+                        <div class="insight-title">Delayed ClearFluency Adoption Correlates with Poor Results</div>
+                        <p>Among campuses with W-W data, adoption timing varied significantly:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li><strong>Alpha Miami</strong>: Early adopter (start of year) → performed reasonably well</li>
+                            <li><strong>Alpha Austin</strong>: Late adopter → delayed transition from Amplify</li>
+                            <li><strong>Alpha Brownsville</strong>: Late adopter (especially delayed) → slow transition from Amplify</li>
+                            <li><strong>Nova Academy Bastrop</strong>: Late adopter</li>
+                            <li><strong>Nova Academy Austin</strong>: Uses multiple apps (ClearFluency + Amplify + LexiaCore5), tends not to use ClearFluency consistently → 0% met F-W prediction, 1.10x avg growth</li>
+                        </ul>
+                    </div>
+                    <div class="insight-box" style="margin-top: 1rem;">
+                        <div class="insight-title">Implication</div>
+                        <p>Alpha Miami's early ClearFluency adoption and reasonable W-W results support the effectiveness of the program when implemented from the start. Late adopters and campuses with multiple competing apps show weaker outcomes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">TTS Testing Issue</div>
+                <div class="card-body">
+                    <div class="insight-box warning">
+                        <div class="insight-title">Text-to-Speech Affecting Test Validity</div>
+                        <p>Until now, Kindergarten and Grade 1 Reading tests included TTS on all elements, creating two problems:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li><strong>False positives:</strong> Students pass tests using listening skills without actual reading ability</li>
+                            <li><strong>False negatives:</strong> Students with reading skills fail when answering from memory rather than checking text</li>
+                        </ul>
+                        <p style="margin-top: 0.75rem;"><strong>Resolution:</strong> TTS is being removed from all elements except question prompts on reading tests.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Top Early Years Performers (F-W)</div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Grade</th>
+                                <th>F-W Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Jack Delbridge</td><td>Texas Sports Academy</td><td>G2</td><td><span class="badge badge-success">29.0x</span></td></tr>
+                            <tr><td>Lucy Peden</td><td>Alpha Brownsville</td><td>G2</td><td><span class="badge badge-success">18.0x</span></td></tr>
+                            <tr><td>Sarah Schipper</td><td>Alpha Brownsville</td><td>G2</td><td><span class="badge badge-success">18.0x</span></td></tr>
+                            <tr><td>Ace Weir</td><td>Alpha San Francisco</td><td>K</td><td><span class="badge badge-success">17.0x</span></td></tr>
+                            <tr><td>Evanna McDaniel</td><td>Alpha Fort Worth</td><td>G1</td><td><span class="badge badge-success">17.0x</span></td></tr>
+                            <tr><td>Emma Schipper</td><td>Alpha Brownsville</td><td>G2</td><td><span class="badge badge-success">16.0x</span></td></tr>
+                            <tr><td>Reia Wong</td><td>Alpha Austin</td><td>G1</td><td><span class="badge badge-success">15.0x</span></td></tr>
+                            <tr><td>Hildy Grimm</td><td>Alpha Anywhere</td><td>G1</td><td><span class="badge badge-success">14.0x</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pattern Analysis Section -->
+        <div id="patterns" class="section">
+            <div class="card">
+                <div class="card-header">Pattern 1: ORF Grade vs Comprehension Alignment (Reading & Language Only)</div>
+                <div class="card-body">
+                    <div class="insight-box">
+                        <div class="insight-title">Understanding the Alignment</div>
+                        <p><strong>ORF Grade</strong> = the fluency level a student is WORKING ON (ORF=2 means mastered G1 fluency, working on G2)</p>
+                        <p><strong>HMG</strong> = the comprehension grade a student has MASTERED (HMG=1 means mastered G1, working on G2)</p>
+                        <p style="margin-top: 0.5rem;"><strong>Expected alignment: ORF = HMG + 1</strong> (fluency working level matches comprehension working level)</p>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">F-W Growth by Fluency Alignment (n=150 students with complete data)</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Students</th>
+                                <th>Avg Predicted</th>
+                                <th>Avg Actual</th>
+                                <th>Met Prediction</th>
+                                <th>Severe Miss</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #fef3c7;">
+                                <td><span class="badge badge-warning">FLUENCY BEHIND</span><br><small>ORF &lt; HMG+1</small></td>
+                                <td>101 (56%)</td>
+                                <td>3.56x</td>
+                                <td><strong>4.68x</strong></td>
+                                <td>37.7%</td>
+                                <td><span class="badge badge-success">14.8%</span></td>
+                            </tr>
+                            <tr style="background: #fee2e2;">
+                                <td><span class="badge badge-danger">ALIGNED</span><br><small>ORF = HMG+1</small></td>
+                                <td>46 (25%)</td>
+                                <td>3.50x</td>
+                                <td>3.60x</td>
+                                <td>32.3%</td>
+                                <td><span class="badge badge-danger">32.3%</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-success">FLUENCY AHEAD</span><br><small>ORF &gt; HMG+1</small></td>
+                                <td>3 (2%)</td>
+                                <td>3.68x</td>
+                                <td>3.54x</td>
+                                <td>66.7%</td>
+                                <td><span class="badge badge-success">0%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="insight-box success" style="margin-top: 1.5rem;">
+                        <div class="insight-title">Fluency-Behind Students (56%): Targeted Intervention is Working</div>
+                        <p>The majority of students haven't passed the fluency benchmark for their current working grade. These students are now kept at their ORF level with targeted comprehension practice. Results are strong:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>Highest actual growth:</strong> 4.68x (131% of prediction)</li>
+                            <li><strong>Lowest severe underperformance:</strong> Only 14.8%</li>
+                            <li>The intervention policy change from "promote anyway" is paying off</li>
+                        </ul>
+                    </div>
+
+                    <div class="insight-box danger" style="margin-top: 1rem;">
+                        <div class="insight-title">Concern: ALIGNED Students Have HIGHEST Severe Underperformance (32.3%)</div>
+                        <p>Surprisingly, students with ORF = HMG+1 (fluency matches comprehension level) show the <strong>highest severe underperformance rate</strong>. This group may be falling through the cracks:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>No intervention triggers:</strong> They don't flag for fluency support OR comprehension holdback</li>
+                            <li><strong>Possibly coasting:</strong> Meeting minimum thresholds without deep mastery</li>
+                            <li><strong>Less momentum:</strong> Fluency-behind students benefit from targeted intervention focus</li>
+                        </ul>
+                        <p style="margin-top: 0.75rem;"><strong>Investigation needed:</strong> What differentiates aligned students who succeed vs. those who severely underperform?</p>
+                    </div>
+
+                    <div class="insight-box" style="margin-top: 1rem;">
+                        <div class="insight-title">Fluency-Ahead Students (2%): Small Sample, Best Outcomes</div>
+                        <p>Only 3 students have fluency ahead of HMG+1. These students are held back until they master comprehension tests. With 66.7% meeting predictions and 0% severe underperformance, this policy appears appropriate, though sample size is too small for conclusions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">Pattern 2: New vs Returning Students</div>
+                    <div class="card-body">
+                        <div class="chart-container short">
+                            <canvas id="newReturningChart"></canvas>
+                        </div>
+                        <div class="insight-box" style="margin-top: 1rem; margin-bottom: 0;">
+                            <p><strong>New students outperform</strong> returning students on F-W growth (4.38x vs 3.16x). Returning students carry the burden of summer learning loss that wasn't fully recovered.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Pattern 3: Rushed MAP Test Impact</div>
+                    <div class="card-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Students</th>
+                                    <th>Avg F-W</th>
+                                    <th>Met 2x</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge badge-danger">Rushed Test</span></td>
+                                    <td>37 (21%)</td>
+                                    <td>1.83x</td>
+                                    <td>Lower</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-success">Not Rushed</span></td>
+                                    <td>99 (79%)</td>
+                                    <td>3.62x</td>
+                                    <td>Higher</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="insight-box warning" style="margin-top: 1rem; margin-bottom: 0;">
+                            <p>Students who rushed the MAP test showed significantly lower measured growth. This affects result validity and requires test administration training.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Pattern 4: Summer Learning Loss - The Visual Evidence</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem;">For 48 Early Years students with complete RIT data across all four time points, we can trace the actual score trajectory:</p>
+
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="ritTrajectoryChart"></canvas>
+                    </div>
+
+                    <div class="three-col" style="margin-top: 1.5rem;">
+                        <div class="metric-box" style="background: #d1fae5;">
+                            <h4>Winter → Spring</h4>
+                            <div class="value" style="color: var(--success);">+9.1 pts</div>
+                            <p>School growth</p>
+                        </div>
+                        <div class="metric-box" style="background: #fee2e2;">
+                            <h4>Spring → Fall</h4>
+                            <div class="value" style="color: var(--danger);">-3.9 pts</div>
+                            <p>Summer loss</p>
+                        </div>
+                        <div class="metric-box" style="background: #d1fae5;">
+                            <h4>Fall → Winter</h4>
+                            <div class="value" style="color: var(--success);">+12.1 pts</div>
+                            <p>School recovery</p>
+                        </div>
+                    </div>
+
+                    <div class="insight-box danger" style="margin-top: 1.5rem;">
+                        <div class="insight-title">The Summer Slump Visualized</div>
+                        <p>The chart shows the characteristic <strong>"dip"</strong> pattern during summer:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>School periods (green slopes):</strong> Students gain an average of 9-12 RIT points</li>
+                            <li><strong>Summer period (red slope):</strong> Students LOSE an average of 3.9 RIT points</li>
+                            <li><strong>Net effect:</strong> Total annual gain is +17.3 pts, but would be +21.2 pts without summer loss</li>
+                        </ul>
+                        <p style="margin-top: 0.75rem;"><strong>Summer erases ~43% of one school period's gains.</strong></p>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">RIT Trajectory by Grade Level</h4>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="ritByGradeChart"></canvas>
+                    </div>
+
+                    <table style="margin-top: 1.5rem;">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>n</th>
+                                <th>Winter 2025</th>
+                                <th>Spring 2025</th>
+                                <th>Fall 2025</th>
+                                <th>Winter 2026</th>
+                                <th>Summer Loss</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Kindergarten</td>
+                                <td>7</td>
+                                <td>158.3</td>
+                                <td>163.6</td>
+                                <td>162.7</td>
+                                <td>173.4</td>
+                                <td><span class="badge badge-warning">-0.9 pts</span></td>
+                            </tr>
+                            <tr>
+                                <td>Grade 1</td>
+                                <td>16</td>
+                                <td>166.4</td>
+                                <td>177.7</td>
+                                <td>173.6</td>
+                                <td>186.5</td>
+                                <td><span class="badge badge-danger">-4.1 pts</span></td>
+                            </tr>
+                            <tr>
+                                <td>Grade 2</td>
+                                <td>25</td>
+                                <td>185.7</td>
+                                <td>194.5</td>
+                                <td>189.8</td>
+                                <td>201.8</td>
+                                <td><span class="badge badge-danger">-4.6 pts</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="insight-box warning" style="margin-top: 1.5rem;">
+                        <div class="insight-title">Key Observations</div>
+                        <ul style="margin-left: 1.5rem;">
+                            <li><strong>Grade 2 loses the most</strong> during summer (-4.6 pts), likely because they have more to lose</li>
+                            <li><strong>Kindergarten is most resilient</strong> (-0.9 pts), possibly due to less complex skills to regress</li>
+                            <li><strong>Grade 1 recovery is strong</strong> (+12.9 pts Fall→Winter), but the summer loss (-4.1 pts) still hurts year-over-year metrics</li>
+                        </ul>
+                    </div>
+
+                    <div class="insight-box" style="margin-top: 1.5rem;">
+                        <div class="insight-title">Implications for Spring 2026</div>
+                        <p>Summer programs won't help Spring 2026 results (testing happens before summer). However:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>W-W predictions may be overly optimistic if they don't fully account for summer loss</li>
+                            <li>Planning should begin now for Summer 2026 bridge programs to improve Spring 2027 results</li>
+                            <li>The strong Fall→Winter recovery (+12.1 pts) shows students CAN recover—we just need to prevent the summer regression</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Pattern 5: Prediction Model Validity Analysis</div>
+                <div class="card-body">
+                    <!-- KEY QUESTIONS ANSWERED -->
+                    <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Key Questions This Analysis Answers</h3>
+                        <div style="display: grid; gap: 1rem;">
+                            <div style="background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 0.5rem;">
+                                <strong style="color: #fbbf24;">Q: Was the Engineering prediction model accurate?</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.95;">No. Only <strong>~36%</strong> of students met Engineering predictions vs <strong>87%</strong> for NWEA projections. The model systematically over-predicts because:</p>
+                                <ul style="margin-left: 1rem; margin-top: 0.5rem; opacity: 0.95;">
+                                    <li>Engineering defaults to <strong>4.0x NWEA</strong> for most students</li>
+                                    <li>Actual median growth is only <strong>2.75x NWEA</strong></li>
+                                    <li>NWEA bar is 1.0x (industry standard), which 87% exceed</li>
+                                </ul>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 0.5rem;">
+                                <strong style="color: #fbbf24;">Q: Should ORF Grade be incorporated into predictions?</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.95;">Yes, but for <strong>risk flagging</strong>, not prediction adjustment. Both ORF groups have similar met-prediction rates (~35-37%), but <strong>ALIGNED students have nearly DOUBLE the severe underperformance rate</strong> (34% vs 19%). ORF identifies WHO needs extra monitoring.</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 0.5rem;">
+                                <strong style="color: #fbbf24;">Q: Is the 4.0x default the core issue?</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.95;">Yes. The 4.0x default is too high for ALL students - median actual is ~2.5-2.8x regardless of ORF alignment. The difference between groups is not in average performance but in <strong>variance and risk</strong>:</p>
+                                <ul style="margin-left: 1rem; margin-top: 0.5rem; opacity: 0.95;">
+                                    <li><strong>Fluency-behind:</strong> Higher variance - some outliers with 10x-29x growth inflate the mean, but most still miss predictions</li>
+                                    <li><strong>Aligned:</strong> Highest severe underperformance (34%) - these students need monitoring</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-box danger">
+                        <div class="insight-title">Critical Finding: Engineering Predictions Are Systematically Too High</div>
+                        <p>Comparing the Engineering team predictions vs NWEA industry-standard projections reveals a significant calibration issue.</p>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">F-W Prediction Accuracy: NWEA vs Engineering (n=196)</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>% Students Met Prediction</th>
+                                <th>Target (as multiplier of NWEA)</th>
+                                <th>Median Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #d1fae5;">
+                                <td><strong>NWEA Projections</strong></td>
+                                <td><span class="badge badge-success">86.7%</span></td>
+                                <td>1.0x NWEA</td>
+                                <td>2.75x NWEA</td>
+                            </tr>
+                            <tr style="background: #fee2e2;">
+                                <td><strong>Engineering Predictions</strong></td>
+                                <td><span class="badge badge-danger">~36%</span></td>
+                                <td>4.0x NWEA (default)</td>
+                                <td>2.75x NWEA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="insight-box warning" style="margin-top: 1.5rem;">
+                        <div class="insight-title">The Core Problem</div>
+                        <p>Engineering predictions default to <strong>4.0x NWEA</strong> for 62% of students, but median actual growth is only <strong>2.75x</strong>. This explains why only ~36% meet Engineering predictions while 87% exceed NWEA projections.</p>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">ORF Alignment Analysis: Met Prediction vs Severe Underperformance (n=94)</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ORF Alignment</th>
+                                <th>n (%)</th>
+                                <th>Met Prediction</th>
+                                <th>Severe Miss (&lt;50% of predicted)</th>
+                                <th>Median Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>FLUENCY BEHIND (ORF &lt; HMG+1)</td>
+                                <td>62 (66%)</td>
+                                <td><span class="badge badge-warning">37.1%</span></td>
+                                <td><span class="badge badge-warning">19.4%</span></td>
+                                <td>2.82x</td>
+                            </tr>
+                            <tr style="background: #fee2e2;">
+                                <td>ALIGNED (ORF = HMG+1)</td>
+                                <td>32 (34%)</td>
+                                <td><span class="badge badge-warning">34.4%</span></td>
+                                <td><span class="badge badge-danger">34.4%</span></td>
+                                <td>2.42x</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="insight-box danger" style="margin-top: 1rem;">
+                        <div class="insight-title">Key Insight: Both Groups Miss Predictions Equally, But ALIGNED Students Have Double the Severe Miss Rate</div>
+                        <p>Both fluency-behind and aligned students have similar met-prediction rates (~35-37%). The critical difference: <strong>34.4%</strong> of aligned students severely underperform vs only <strong>19.4%</strong> of fluency-behind students. Aligned students don't trigger intervention flags but have the highest risk of catastrophic underperformance.</p>
+                    </div>
+
+                    <div class="insight-box" style="margin-top: 1rem; border-left: 4px solid #f59e0b;">
+                        <div class="insight-title">Why Do Fluency-Behind Students Have Higher Mean Growth?</div>
+                        <p>The <strong>mean</strong> growth for fluency-behind students (4.62x) appears much higher than aligned students (3.67x), but this is misleading:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>Median</strong> growth is similar: 2.82x (behind) vs 2.42x (aligned)</li>
+                            <li>7 fluency-behind students with extreme outlier growth (10x-29x) inflate the mean</li>
+                            <li>These outliers may be data anomalies or students with unusual circumstances</li>
+                            <li>The typical student in both groups achieves ~2.5-2.8x NWEA, well below the 4.0x target</li>
+                        </ul>
+                    </div>
+
+                    <div class="insight-box" style="margin-top: 1.5rem; border-left: 4px solid #2563eb;">
+                        <div class="insight-title">Recommendation: Incorporate ORF into the Prediction Model for Risk Flagging</div>
+                        <p style="margin-bottom: 1rem;"><strong>ORF alignment should be used primarily for identifying at-risk students, not for adjusting prediction targets.</strong> Both groups have similar median growth (~2.5-2.8x), so the prediction itself doesn't need to differ. What differs is the risk profile:</p>
+                        <table style="margin-bottom: 1rem;">
+                            <thead>
+                                <tr>
+                                    <th>ORF Status</th>
+                                    <th>Current Approach</th>
+                                    <th>Recommended Approach</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>FLUENCY BEHIND</strong><br>(ORF &lt; HMG+1, 66%)</td>
+                                    <td>Default 4.0x, triggered for intervention</td>
+                                    <td><strong>Lower target to ~2.8x</strong><br>Median actual is 2.82x. Current intervention is working; these students are already getting attention.</td>
+                                </tr>
+                                <tr style="background: #fee2e2;">
+                                    <td><strong>ALIGNED</strong><br>(ORF = HMG+1, 34%)</td>
+                                    <td>Default 4.0x, no flags</td>
+                                    <td><strong>Lower target to ~2.5x AND flag for monitoring</strong><br>Median is 2.42x, but 34% severely underperform. These students "look fine" but have highest catastrophic failure rate.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Key insight:</strong> The 4.0x default is too high for ALL students. The difference between groups is not in typical performance (both ~2.5-2.8x) but in <em>risk</em>: aligned students have double the severe underperformance rate despite appearing to have "aligned" skills.</p>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Additional Finding: XP Achievement</h4>
+                    <div class="insight-box warning">
+                        <p><strong>Only 1 of 107 students (0.9%)</strong> earned expected XP. 100% of very-wrong predictions were for students who did NOT meet XP expectations. This suggests either:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>XP expectations are unrealistically high, OR</li>
+                            <li>Predictions assume XP completion that rarely occurs</li>
+                        </ul>
+                    </div>
+
+                    <!-- SUMMARY: BOTTOM LINE -->
+                    <div style="background: linear-gradient(135deg, #064e3b 0%, #059669 100%); color: white; padding: 1.5rem; border-radius: 0.75rem; margin-top: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Bottom Line: What Should Change in the Prediction Model?</h3>
+                        <ol style="margin-left: 1rem;">
+                            <li style="margin-bottom: 0.75rem;"><strong>Recalibrate the 4.0x default to ~2.75x.</strong> The blanket 4.0x expectation is unrealistic (only ~36% meet it). Median actual growth is 2.75x across all groups. Setting a more realistic target would bring success rates closer to NWEA's 87%.</li>
+                            <li style="margin-bottom: 0.75rem;"><strong>Add ORF as a risk flag, not a prediction modifier.</strong> ORF alignment doesn't change predicted growth (both groups have ~2.5-2.8x median), but ALIGNED students (ORF = HMG+1) should be flagged for additional monitoring due to their 34% severe underperformance rate.</li>
+                            <li style="margin-bottom: 0.75rem;"><strong>Investigate why ALIGNED students have the worst outcomes.</strong> These students appear to have "matching" fluency and comprehension but have double the catastrophic failure rate. Something is being missed in assessment.</li>
+                            <li><strong>Account for summer learning loss.</strong> W-W predictions should factor in the ~3.9 RIT point summer loss rather than assuming continuous growth.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Pattern 6: Effort Indicators</div>
+                <div class="card-body">
+                    <div class="three-col">
+                        <div class="metric-box">
+                            <h4>Meeting Time Expectations</h4>
+                            <div class="value" style="color: var(--warning);">59%</div>
+                            <p>101 of 172 students</p>
+                        </div>
+                        <div class="metric-box">
+                            <h4>Mastered 1+ Effective Grade Test</h4>
+                            <div class="value" style="color: var(--success);">67%</div>
+                            <p>119 of 177 students</p>
+                        </div>
+                        <div class="metric-box">
+                            <h4>Both Low Time + No Mastery</h4>
+                            <div class="value" style="color: var(--danger);">34</div>
+                            <p>Students needing urgent intervention</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Details Section -->
+        <div id="students" class="section">
+            <div class="card">
+                <div class="card-header">Students with W-W Data (Sorted by Actual Growth)</div>
+                <div class="card-body" style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Grade</th>
+                                <th>ORF</th>
+                                <th>HMG</th>
+                                <th>W-W Pred</th>
+                                <th>W-W Actual</th>
+                                <th>Met Pred?</th>
+                                <th>Met 2x?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #fee2e2;"><td>Bash Salazar</td><td>Alpha Brownsville</td><td>G2</td><td>2</td><td>3</td><td>1.57x</td><td>0.50x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr><td>Gia Clark</td><td>Alpha Austin</td><td>G2</td><td>2</td><td>3</td><td>0.42x</td><td>0.67x</td><td><span class="badge badge-success">Yes</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #fee2e2;"><td>Arden McCord</td><td>Alpha Austin</td><td>G1</td><td>1</td><td>2</td><td>1.00x</td><td>0.69x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #fee2e2;"><td>A'Leiah Jenkins</td><td>Nova Austin</td><td>G1</td><td>1</td><td>0</td><td>2.07x</td><td>0.73x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #fee2e2;"><td>Ethan Bale</td><td>Alpha Brownsville</td><td>G1</td><td>1</td><td>2</td><td>1.57x</td><td>0.79x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #fee2e2;"><td>Megan Chukwura</td><td>Nova Austin</td><td>G1</td><td>1</td><td>0</td><td>2.00x</td><td>0.87x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #fee2e2;"><td>Gigi Gurrola</td><td>Alpha Brownsville</td><td>G1</td><td>1</td><td>1</td><td>2.35x</td><td>0.88x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #fee2e2;"><td>Diego Bash</td><td>Alpha Austin</td><td>G1</td><td>2</td><td>1</td><td>2.06x</td><td>1.12x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #fee2e2;"><td>Nico Blanco</td><td>Alpha Austin</td><td>G1</td><td>1</td><td>0</td><td>1.65x</td><td>1.12x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr><td>Sai Shah</td><td>Alpha Miami</td><td>K</td><td>0</td><td>0</td><td>0.82x</td><td>1.29x</td><td><span class="badge badge-success">Yes</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr><td>Vigo Levin</td><td>Alpha Brownsville</td><td>G2</td><td>2</td><td>3</td><td>0.87x</td><td>1.40x</td><td><span class="badge badge-success">Yes</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr><td>Anthem Thomas</td><td>Alpha Austin</td><td>G2</td><td>1</td><td>1</td><td>1.44x</td><td>1.50x</td><td><span class="badge badge-success">Yes</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr><td>Mya Hadnot</td><td>Nova Austin</td><td>G2</td><td>2</td><td>1</td><td>1.79x</td><td>1.64x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr><td>Zarielle Vela</td><td>Alpha Brownsville</td><td>G2</td><td>2</td><td>3</td><td>0.89x</td><td>1.67x</td><td><span class="badge badge-success">Yes</span></td><td><span class="badge badge-danger">No</span></td></tr>
+                            <tr style="background: #d1fae5;"><td>Victoria Marin Barrios</td><td>Nova Austin</td><td>K</td><td>1</td><td>0</td><td>2.85x</td><td>2.00x</td><td><span class="badge badge-danger">No</span></td><td><span class="badge badge-success">Yes</span></td></tr>
+                            <tr style="background: #d1fae5;"><td>Sarah Schipper</td><td>Alpha Brownsville</td><td>G2</td><td>1</td><td>1</td><td>1.76x</td><td>2.35x</td><td><span class="badge badge-success">Yes</span></td><td><span class="badge badge-success">Yes</span></td></tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;"><strong>Note:</strong> Only 2 of 31 Early Years students with W-W data (6.5%) met the 2x growth target.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Students Requiring Urgent Intervention</div>
+                <div class="card-body">
+                    <h4 style="margin-bottom: 1rem;">Students with Negative F-W Growth</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Grade</th>
+                                <th>F-W Growth</th>
+                                <th>Gap from Prediction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #fee2e2;">
+                                <td>Leila Abony</td>
+                                <td>Alpha Austin</td>
+                                <td>G2</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td>-6.00x</td>
+                            </tr>
+                            <tr style="background: #fee2e2;">
+                                <td>Leo Wright</td>
+                                <td>Alpha Brownsville</td>
+                                <td>G1</td>
+                                <td><span class="badge badge-danger">-1.40x</span></td>
+                                <td>-4.00x</td>
+                            </tr>
+                            <tr style="background: #fee2e2;">
+                                <td>Oz Robertson</td>
+                                <td>Alpha Austin</td>
+                                <td>K</td>
+                                <td><span class="badge badge-danger">-1.33x</span></td>
+                                <td>-5.33x</td>
+                            </tr>
+                            <tr style="background: #fef3c7;">
+                                <td>Lola Propp</td>
+                                <td>Alpha Anywhere</td>
+                                <td>G2</td>
+                                <td><span class="badge badge-warning">-0.33x</span></td>
+                                <td>-1.00x</td>
+                            </tr>
+                            <tr style="background: #fef3c7;">
+                                <td>London Politi</td>
+                                <td>Alpha Anywhere</td>
+                                <td>G1</td>
+                                <td><span class="badge badge-warning">-0.11x</span></td>
+                                <td>-2.33x</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Students with Critical Accuracy Issues</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Issue</th>
+                                <th>Action Required</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #fee2e2;">
+                                <td><strong>Diego Bash</strong></td>
+                                <td>Alpha Austin</td>
+                                <td>28% accuracy, 70% expected CF usage, comprehension flag</td>
+                                <td><span class="badge badge-danger">URGENT: Diagnostic assessment needed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Nico Blanco</td>
+                                <td>Alpha Austin</td>
+                                <td>71% accuracy, below expected CF usage, comprehension flag</td>
+                                <td><span class="badge badge-warning">Comprehension intervention</span></td>
+                            </tr>
+                            <tr>
+                                <td>A'Leiah Jenkins</td>
+                                <td>Nova Austin</td>
+                                <td>324% time, 78% accuracy, comprehension flag</td>
+                                <td><span class="badge badge-warning">Quality over quantity focus</span></td>
+                            </tr>
+                            <tr>
+                                <td>Victoria Marin Barrios</td>
+                                <td>Nova Austin</td>
+                                <td>ELL student, low pace/accuracy, comprehension flag</td>
+                                <td><span class="badge badge-warning">ELL + comprehension support</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div id="recommendations" class="section">
+            <div class="insight-box" style="margin-bottom: 2rem;">
+                <div class="insight-title">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Spring 2026 MAP Testing: ~8 Weeks Remaining
+                </div>
+                <p>The following recommendations focus on maximizing <strong>Spring 2025 → Spring 2026</strong> year-on-year growth. Actions are prioritized by what the remote academics team can directly control.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header" style="background: #d1fae5;">✓ Already Implemented (Fall 2025)</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">These interventions are already in place. Spring MAP results will be the first full measurement of their impact.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Initiative</th>
+                                <th>Scope</th>
+                                <th>Expected Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-success">✓</span> Explicit Reading Comprehension Instruction</td>
+                                <td>K-8</td>
+                                <td>Should improve comprehension scores across all grades</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-success">✓</span> ClearFluency for Grades 1-2</td>
+                                <td>G1-G2</td>
+                                <td>Should close fluency gaps (64% of students behind)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-success">✓</span> Explicit Vocabulary Instruction</td>
+                                <td>G3-8</td>
+                                <td>Should support comprehension in upper grades</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-success">✓</span> MAP Test Administration Training</td>
+                                <td>All Guides</td>
+                                <td>Training complete; student rushing is outside guide control</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Immediate Actions (Remote Academics Team)</div>
+                <div class="card-body">
+                    <ul class="recommendation-list">
+                        <li>
+                            <div class="rec-icon">1</div>
+                            <div class="rec-content">
+                                <h4>Complete TTS Removal from Reading Tests</h4>
+                                <p>Remove Text-to-Speech from all reading test elements except question prompts. Critical for valid Spring MAP results that reflect actual reading ability.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">2</div>
+                            <div class="rec-content">
+                                <h4>Diagnostic Assessment: Diego Bash (28% accuracy)</h4>
+                                <p>28% accuracy is critically low. Identify root cause (decoding, attention, or learning difference). Recommend targeted intervention path to campus.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">3</div>
+                            <div class="rec-content">
+                                <h4>Flag 34 Students with Low Time + No Mastery for Campus Follow-up</h4>
+                                <p>Generate list for each campus of students with both insufficient practice time AND no effective grade test mastery. Campus guides need visibility.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">4</div>
+                            <div class="rec-content">
+                                <h4>Investigate Nova Academy Austin (0% F-W prediction success)</h4>
+                                <p>Nova Austin has only 1.10x average growth. Determine if this is a data issue, curriculum implementation issue, or student population factor. Are they fully using ClearFluency now?</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Curriculum & Content Improvements</div>
+                <div class="card-body">
+                    <ul class="recommendation-list">
+                        <li>
+                            <div class="rec-icon">5</div>
+                            <div class="rec-content">
+                                <h4>Investigate Why "Aligned" Students Underperform (Priority)</h4>
+                                <p><strong>40.7% of aligned students severely underperform</strong> despite having fluency matching comprehension level. These students don't trigger any intervention flags. Need to identify what differentiates successful vs. struggling aligned students (time on task? accuracy? specific skill gaps?).</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">6</div>
+                            <div class="rec-content">
+                                <h4>Continue Monitoring Fluency-Behind Intervention</h4>
+                                <p>The new policy (keeping students at ORF level with targeted comprehension) is showing strong results (4.97x growth, 18.2% severe miss). Continue this approach and track fluency gap closure over time.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">7</div>
+                            <div class="rec-content">
+                                <h4>Review 4 Fluency-Ahead Students Individually</h4>
+                                <p>Students with fluency ahead of HMG+1 are held back until they master comprehension tests. If any are below age-grade, being kept in lower content may be hindering progress. Consider if these students need different support to advance comprehension faster.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">8</div>
+                            <div class="rec-content">
+                                <h4>ELL-Specific Comprehension Support</h4>
+                                <p>Victoria Marin Barrios and other ELL students need differentiated comprehension instruction that accounts for language acquisition alongside reading development.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" style="background: #fef3c7;">⚠️ Prediction Model Recalibration (Priority)</div>
+                <div class="card-body">
+                    <div class="insight-box danger" style="margin-bottom: 1rem;">
+                        <p><strong>Current state:</strong> Only 32% of students meet Engineering predictions vs 88.7% for NWEA. The model is systematically over-predicting by defaulting to 4.0x for most students.</p>
+                    </div>
+                    <ul class="recommendation-list">
+                        <li>
+                            <div class="rec-icon">9</div>
+                            <div class="rec-content">
+                                <h4>Incorporate ORF Grade into Prediction Model</h4>
+                                <p>Apply adjustments based on ORF vs HMG+1 alignment:</p>
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li><strong>FLUENCY BEHIND (ORF &lt; HMG+1, 56%):</strong> Students exceed predictions by 31% - intervention working well; could increase predictions</li>
+                                    <li><strong>ALIGNED (ORF = HMG+1, 25%):</strong> HIGH VARIANCE - 32.3% severely underperform. Flag for additional monitoring or investigate what differentiates success vs failure</li>
+                                    <li><strong>FLUENCY AHEAD (ORF &gt; HMG+1, 2%):</strong> Small sample, predictions approximately correct</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">10</div>
+                            <div class="rec-content">
+                                <h4>Recalibrate XP Expectations</h4>
+                                <p>Only 0.9% of students earn expected XP. Either lower XP targets to match reality, or build predictions that assume typical (not expected) XP achievement.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">11</div>
+                            <div class="rec-content">
+                                <h4>Account for Summer Learning Loss in W-W Predictions</h4>
+                                <p>Students lose ~3.9 RIT points over summer on average. W-W predictions should factor in this systematic loss rather than assuming continuous growth.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="rec-icon">12</div>
+                            <div class="rec-content">
+                                <h4>Consider Using NWEA as Baseline</h4>
+                                <p>88.7% of students exceed NWEA projections. A model that starts from NWEA and adds expected Alpha boost based on engagement metrics may be more accurate than the current approach.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Spring 2026 Targets</div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current (Winter)</th>
+                                <th>Target (Spring)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Early Years Met 2x Target (W-S period)</td>
+                                <td><span class="badge badge-success">72.9% (F-W)</span></td>
+                                <td><span class="badge badge-success">Maintain >70%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Early Years Met Prediction</td>
+                                <td><span class="badge badge-warning">43.4%</span></td>
+                                <td><span class="badge badge-success">>50%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Nova Austin Growth</td>
+                                <td><span class="badge badge-danger">1.10x (0% met)</span></td>
+                                <td><span class="badge badge-warning">>2.0x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Fluency Gap (% behind)</td>
+                                <td><span class="badge badge-warning">64%</span></td>
+                                <td><span class="badge badge-success"><50%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Students Meeting Time Expectations</td>
+                                <td><span class="badge badge-warning">59%</span></td>
+                                <td><span class="badge badge-success">>75%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Future: Summer 2026 Planning</div>
+                <div class="card-body">
+                    <div class="insight-box warning">
+                        <div class="insight-title">Summer Learning Loss Prevention</div>
+                        <p>Data shows students lose an average of <strong>3.9 RIT points</strong> over summer (43% of one school period's gains). This directly impacts W-W metrics.</p>
+                        <p style="margin-top: 0.75rem;"><strong>For Spring 2027 success:</strong> Begin planning Summer 2026 reading maintenance programs now. Options include:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>Summer reading app access with minimum usage requirements</li>
+                            <li>Weekly reading check-ins during summer break</li>
+                            <li>Summer reading challenges with incentives</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('highlight'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Chart.js defaults
+        Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+        // F-W by Grade Chart
+        const fwByGradeCtx = document.getElementById('fwByGradeChart').getContext('2d');
+        new Chart(fwByGradeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['K', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8'],
+                datasets: [{
+                    label: 'Met Prediction %',
+                    data: [48.7, 37.1, 43.6, 52.8, 76.5, 78.6, 65.0, 81.8, 66.7],
+                    backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Met 2x Target %',
+                    data: [76.9, 74.3, 69.1, 72.2, 64.7, 78.6, 65.0, 72.7, 83.3],
+                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Percentage' }
+                    }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 50,
+                                yMax: 50,
+                                borderColor: 'rgba(239, 68, 68, 0.5)',
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Early Years Campus Chart
+        const eyCampusCtx = document.getElementById('eyCampusChart').getContext('2d');
+        new Chart(eyCampusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Alpha Austin', 'Brownsville', 'Nova Austin', 'Miami', 'TX Sports', 'Cedar Park', 'Anywhere', 'Fort Worth', 'SF'],
+                datasets: [{
+                    label: 'Predicted F-W',
+                    data: [3.72, 3.51, 2.97, 3.81, 3.70, 3.68, 2.98, 3.55, 4.00],
+                    backgroundColor: 'rgba(37, 99, 235, 0.3)',
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 2
+                }, {
+                    label: 'Actual F-W',
+                    data: [4.05, 5.68, 1.10, 2.92, 5.42, 3.51, 5.44, 7.57, 8.75],
+                    backgroundColor: 'rgba(16, 185, 129, 0.3)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Growth Multiplier' }
+                    }
+                }
+            }
+        });
+
+        // New vs Returning Chart
+        const newReturningCtx = document.getElementById('newReturningChart').getContext('2d');
+        new Chart(newReturningCtx, {
+            type: 'bar',
+            data: {
+                labels: ['New Students', 'Returning Students'],
+                datasets: [{
+                    label: 'Avg F-W Growth',
+                    data: [4.38, 3.16],
+                    backgroundColor: ['rgba(16, 185, 129, 0.7)', 'rgba(245, 158, 11, 0.7)'],
+                    borderColor: ['rgba(16, 185, 129, 1)', 'rgba(245, 158, 11, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Growth Multiplier' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // RIT Trajectory Chart - Overall Early Years (n=48)
+        const ritTrajectoryCtx = document.getElementById('ritTrajectoryChart').getContext('2d');
+        new Chart(ritTrajectoryCtx, {
+            type: 'line',
+            data: {
+                labels: ['Winter 2025', 'Spring 2025', 'Fall 2025', 'Winter 2026'],
+                datasets: [{
+                    label: 'Average RIT Score (n=48)',
+                    data: [175.25, 184.38, 180.48, 192.58],
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0,
+                    pointRadius: 8,
+                    pointBackgroundColor: [
+                        'rgba(37, 99, 235, 1)',    // Winter 2025 - blue
+                        'rgba(16, 185, 129, 1)',   // Spring 2025 - green (peak before summer)
+                        'rgba(239, 68, 68, 1)',    // Fall 2025 - red (after summer loss)
+                        'rgba(37, 99, 235, 1)'     // Winter 2026 - blue
+                    ],
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    segment: {
+                        borderColor: function(ctx) {
+                            // Red line for Spring->Fall (summer loss), green for school periods
+                            if (ctx.p0DataIndex === 1) return 'rgba(239, 68, 68, 1)';
+                            return 'rgba(16, 185, 129, 1)';
+                        },
+                        borderDash: function(ctx) {
+                            if (ctx.p0DataIndex === 1) return [5, 5];
+                            return [];
+                        }
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 165,
+                        max: 200,
+                        title: { display: true, text: 'RIT Score' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Testing Period' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Early Years Reading: RIT Score Trajectory Over Time',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Avg RIT: ' + context.parsed.y.toFixed(1);
+                            },
+                            afterLabel: function(context) {
+                                const idx = context.dataIndex;
+                                if (idx === 1) return '+9.1 pts from Winter (school growth)';
+                                if (idx === 2) return '-3.9 pts from Spring (SUMMER LOSS)';
+                                if (idx === 3) return '+12.1 pts from Fall (school recovery)';
+                                return '';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // RIT Trajectory by Grade Chart
+        const ritByGradeCtx = document.getElementById('ritByGradeChart').getContext('2d');
+        new Chart(ritByGradeCtx, {
+            type: 'line',
+            data: {
+                labels: ['Winter 2025', 'Spring 2025', 'Fall 2025', 'Winter 2026'],
+                datasets: [{
+                    label: 'Kindergarten (n=7)',
+                    data: [158.29, 163.57, 162.71, 173.43],
+                    borderColor: 'rgba(245, 158, 11, 1)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 5
+                }, {
+                    label: 'Grade 1 (n=16)',
+                    data: [166.38, 177.69, 173.62, 186.50],
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 5
+                }, {
+                    label: 'Grade 2 (n=25)',
+                    data: [185.68, 194.48, 189.84, 201.84],
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 150,
+                        max: 210,
+                        title: { display: true, text: 'RIT Score' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'RIT Trajectory by Grade Level - Notice the "dip" after Spring',
+                        font: { size: 14, weight: 'bold' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + ' RIT';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
