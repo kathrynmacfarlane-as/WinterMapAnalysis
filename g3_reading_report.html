@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G3-8 Reading Results - Winter 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0891b2;
+            --primary-light: #22d3ee;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #0e7490 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+        header p { opacity: 0.9; }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--gray-100);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab:hover { border-color: var(--primary); }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--gray-100);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-body { padding: 1.5rem; }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+        }
+
+        .metric .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .metric .label {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .success { color: var(--success); }
+        .warning { color: var(--warning); }
+        .danger { color: var(--danger); }
+        .primary { color: var(--primary); }
+
+        .info-box {
+            background: #e0f2fe;
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid var(--success);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .danger-box {
+            background: #fee2e2;
+            border-left: 4px solid var(--danger);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        th { background: var(--gray-50); font-weight: 600; }
+
+        tr:hover { background: var(--gray-50); }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-primary { background: #e0f2fe; color: #0369a1; }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .comparison-box {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background: var(--gray-50);
+        }
+
+        .comparison-box h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .comparison-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .highlight-row { background: #fef3c7 !important; }
+        .danger-row { background: #fee2e2 !important; }
+
+        @media (max-width: 768px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>G3-8 Reading Results</h1>
+            <p>Winter 2026 MAP Analysis | Students in Grades 3+ Reading Curriculum</p>
+        </header>
+
+        <!-- Data Note -->
+        <div class="card" style="border: 2px solid var(--primary); margin-bottom: 1.5rem;">
+            <div class="card-body" style="background: #e0f2fe; padding: 1rem 1.5rem;">
+                <p style="margin: 0;"><strong>Note:</strong> This report covers students in the G3+ Reading curriculum (Early Lit = NO). Students in Early Literacy are tracked separately in the <a href="index.html" style="color: #0369a1; font-weight: 600;">Early Years Reading Report</a>.</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('summary')">Executive Summary</button>
+            <button class="tab" onclick="showSection('campus')">Campus Breakdown</button>
+            <button class="tab" onclick="showSection('deepdive')">Students for Deep Dive</button>
+        </div>
+
+        <!-- EXECUTIVE SUMMARY TAB -->
+        <div id="summary" class="section active">
+
+            <!-- Key Metrics -->
+            <div class="card">
+                <div class="card-header">Key Results at a Glance</div>
+                <div class="card-body">
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="value primary">308</div>
+                            <div class="label">Students in G3+ Reading</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value success">71%</div>
+                            <div class="label">Met 2x F-W Target</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value warning">3.75x</div>
+                            <div class="label">Median F-W Growth</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value warning">38%</div>
+                            <div class="label">Met 2x W-W Target</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">154 students have F-W growth data; 45 students have W-W growth data.</p>
+                </div>
+            </div>
+
+            <!-- Success Story -->
+            <div class="card">
+                <div class="card-header" style="background: #d1fae5;">Strong F-W Performance</div>
+                <div class="card-body">
+                    <div class="success-box">
+                        <h4>Fall-to-Winter Growth Exceeds Early Years</h4>
+                        <p style="margin-top: 0.5rem;">G3+ Reading students achieved a <strong>3.75x median F-W growth</strong>, outperforming the Early Years median of 2.75x. This indicates strong curriculum engagement and effectiveness at higher grade levels.</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li><strong>71%</strong> met the 2x F-W target (same as Early Years)</li>
+                            <li><strong>53%</strong> achieved 3x or higher F-W growth</li>
+                            <li>Median RIT gain of <strong>8 points</strong> Fall to Winter</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- W-W Challenge -->
+            <div class="card">
+                <div class="card-header" style="background: #fef3c7;">W-W Growth: Improved but Still Below Target</div>
+                <div class="card-body">
+                    <div class="warning-box">
+                        <h4>38% Met 2x W-W Target (vs 0% in Early Years)</h4>
+                        <p style="margin-top: 0.5rem;">W-W performance is notably better in G3+ Reading than in Early Years, though still below our 2x target for most students:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Median W-W growth: <strong>1.50x</strong></li>
+                            <li>17 of 45 students with W-W data met the 2x target</li>
+                            <li>Top performer: Alpha Brownsville at <strong>2.00x median W-W</strong> (53% meeting target)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campus Alert -->
+            <div class="card">
+                <div class="card-header" style="background: #fee2e2;">Campus Alert: Alpha High School</div>
+                <div class="card-body">
+                    <div class="danger-box">
+                        <h4>Alpha High School Shows Concerning W-W Pattern</h4>
+                        <p style="margin-top: 0.5rem;">While F-W performance is acceptable (2.50x median, 56% meeting target), the W-W results are alarming:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Median W-W growth: <strong>-2.00x</strong> (negative growth)</li>
+                            <li>Only 22% met W-W target (2 of 9 students with W-W data)</li>
+                            <li>5 of 9 students with W-W data showed negative growth</li>
+                            <li>13 of 36 students (36%) have F-W growth below 1x</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;"><strong>Investigation needed:</strong> Summer learning loss may be particularly severe for high school students, or there may be test-taking issues.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIT Analysis -->
+            <div class="card">
+                <div class="card-header">RIT Score Analysis</div>
+                <div class="card-body">
+                    <div class="comparison-grid">
+                        <div class="comparison-box">
+                            <h4>F-W RIT Point Changes</h4>
+                            <div class="comparison-stat">
+                                <span>Median gain</span>
+                                <strong>+8 points</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Mean gain</span>
+                                <strong>+6.5 points</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>75th percentile</span>
+                                <strong>+12 points</strong>
+                            </div>
+                            <div class="comparison-stat" style="border: none;">
+                                <span>90th percentile</span>
+                                <strong>+16 points</strong>
+                            </div>
+                        </div>
+                        <div class="comparison-box" style="border: 2px solid var(--danger);">
+                            <h4>Students Who Lost RIT Points</h4>
+                            <div class="comparison-stat">
+                                <span>Lost RIT F-W</span>
+                                <strong class="danger">27 students (18%)</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Lost >5 points</span>
+                                <strong class="danger">11 students</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Largest loss</span>
+                                <strong class="danger">-12 points</strong>
+                            </div>
+                            <div class="comparison-stat" style="border: none;">
+                                <span>Most affected campus</span>
+                                <strong>Alpha High School (9)</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Comparison -->
+            <div class="card">
+                <div class="card-header">G3+ vs Early Years Comparison</div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Early Years (K-2)</th>
+                                <th>G3+ Reading</th>
+                                <th>Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Students</td>
+                                <td>218</td>
+                                <td>308</td>
+                                <td>+90</td>
+                            </tr>
+                            <tr>
+                                <td>Median F-W Growth</td>
+                                <td>2.75x</td>
+                                <td><strong>3.75x</strong></td>
+                                <td class="success">+1.00x</td>
+                            </tr>
+                            <tr>
+                                <td>Met 2x F-W Target</td>
+                                <td>71%</td>
+                                <td>71%</td>
+                                <td>Same</td>
+                            </tr>
+                            <tr>
+                                <td>Median W-W Growth</td>
+                                <td>N/A (0%)</td>
+                                <td><strong>1.50x</strong></td>
+                                <td class="success">Better</td>
+                            </tr>
+                            <tr>
+                                <td>Met 2x W-W Target</td>
+                                <td>0%</td>
+                                <td><strong>38%</strong></td>
+                                <td class="success">+38%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAMPUS TAB -->
+        <div id="campus" class="section">
+            <div class="card">
+                <div class="card-header">Campus Performance - G3+ Reading (Sorted by F-W Median)</div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campus</th>
+                                <th>Students</th>
+                                <th>F-W Median</th>
+                                <th>Met 2x F-W</th>
+                                <th>W-W Median</th>
+                                <th>Met 2x W-W</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Alpha School Scottsdale</td>
+                                <td>8</td>
+                                <td><span class="badge badge-success">5.30x</span></td>
+                                <td>62%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Montessorium Cedar Park</td>
+                                <td>5</td>
+                                <td><span class="badge badge-success">4.67x</span></td>
+                                <td>60%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Austin</td>
+                                <td>16</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td>88%</td>
+                                <td>1.35x</td>
+                                <td>30%</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Brownsville</td>
+                                <td>19</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td>84%</td>
+                                <td><span class="badge badge-success">2.00x</span></td>
+                                <td><strong>53%</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School San Francisco</td>
+                                <td>7</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td>86%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>GT School</td>
+                                <td>5</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td>80%</td>
+                                <td>1.58x</td>
+                                <td>33%</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Santa Barbara</td>
+                                <td>7</td>
+                                <td><span class="badge badge-success">3.75x</span></td>
+                                <td>86%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Miami</td>
+                                <td>42</td>
+                                <td><span class="badge badge-success">2.90x</span></td>
+                                <td>69%</td>
+                                <td><span class="badge badge-success">2.50x</span></td>
+                                <td><strong>60%</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Texas Sports Academy</td>
+                                <td>3</td>
+                                <td><span class="badge badge-success">2.67x</span></td>
+                                <td>100%</td>
+                                <td>1.12x</td>
+                                <td>0%</td>
+                            </tr>
+                            <tr class="danger-row">
+                                <td><strong>Alpha High School</strong></td>
+                                <td>36</td>
+                                <td><span class="badge badge-warning">2.50x</span></td>
+                                <td>56%</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td><strong>22%</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Fort Worth</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">1.60x</span></td>
+                                <td>0%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr class="danger-row">
+                                <td>Nova Academy Bastrop</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">-1.00x</span></td>
+                                <td>0%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">
+                        N/A indicates fewer than 3 students with W-W data.
+                        Alpha Anywhere Center (2), Alpha School Palm Beach (1), NextGen Academy (1) omitted due to small sample size.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Alpha High School Deep Dive -->
+            <div class="card">
+                <div class="card-header" style="background: #fee2e2;">Alpha High School - W-W Growth Detail</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">Alpha High School shows the most concerning W-W pattern. Of 9 students with W-W data, 5 show negative growth.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Age</th>
+                                <th>HMG</th>
+                                <th>F-W Growth</th>
+                                <th>W-W Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ross Margraves</td>
+                                <td>9</td>
+                                <td>5</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td><span class="badge badge-danger">-5.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Adrienne Laswell</td>
+                                <td>9</td>
+                                <td>7</td>
+                                <td><span class="badge badge-danger">-8.00x</span></td>
+                                <td><span class="badge badge-danger">-4.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Zayen Szpitalak</td>
+                                <td>9</td>
+                                <td>8</td>
+                                <td><span class="badge badge-danger">-7.00x</span></td>
+                                <td><span class="badge badge-danger">-2.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Jacob Kuchinsky</td>
+                                <td>9</td>
+                                <td>N/A</td>
+                                <td><span class="badge badge-success">9.00x</span></td>
+                                <td><span class="badge badge-danger">-2.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Grey Walker</td>
+                                <td>9</td>
+                                <td>8</td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Branson Pfiester</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td><span class="badge badge-success">7.00x</span></td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Gus Castillo</td>
+                                <td>9</td>
+                                <td>8</td>
+                                <td><span class="badge badge-success">3.00x</span></td>
+                                <td><span class="badge badge-warning">1.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Ali Romman</td>
+                                <td>9</td>
+                                <td>8</td>
+                                <td><span class="badge badge-success">15.00x</span></td>
+                                <td><span class="badge badge-success">5.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Benny Valles</td>
+                                <td>9</td>
+                                <td>9</td>
+                                <td><span class="badge badge-success">13.00x</span></td>
+                                <td><span class="badge badge-success">6.00x</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem;"><strong>Pattern:</strong> Students with strong F-W growth can still show severe W-W decline, suggesting significant summer learning loss that exceeds school-year gains.</p>
+                </div>
+            </div>
+
+            <!-- Top Performing Campuses -->
+            <div class="card">
+                <div class="card-header" style="background: #d1fae5;">W-W Success Stories</div>
+                <div class="card-body">
+                    <div class="success-box">
+                        <h4>Alpha Brownsville & Alpha Miami Lead W-W Performance</h4>
+                        <p style="margin-top: 0.5rem;">Two campuses achieved median W-W growth at or above our 2x target:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li><strong>Alpha Miami:</strong> 2.50x median W-W, 60% meeting target (5 students)</li>
+                            <li><strong>Alpha Brownsville:</strong> 2.00x median W-W, 53% meeting target (15 students)</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">These campuses should be studied for best practices in maintaining learning over summer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEEP DIVE TAB -->
+        <div id="deepdive" class="section">
+            <div class="card">
+                <div class="card-header">Students Requiring Deep Dive Investigation</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">Students with F-W growth below 1.5x or W-W growth below 1.0x. Total: <strong>50 students</strong>. Sorted by F-W growth.</p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Age</th>
+                                <th>HMG</th>
+                                <th>F-W Growth</th>
+                                <th>W-W Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>McKayla Caldbeck</td>
+                                <td>Alpha School San Francisco</td>
+                                <td>5</td>
+                                <td>4</td>
+                                <td><span class="badge badge-danger">-12.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Madeleine Grams</td>
+                                <td>Alpha High School</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <td><span class="badge badge-danger">-11.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Sander Gabler</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>8</td>
+                                <td>N/A</td>
+                                <td><span class="badge badge-danger">-10.00x</span></td>
+                                <td><span class="badge badge-danger">-3.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Asher Hazard</td>
+                                <td>Alpha School Miami</td>
+                                <td>4</td>
+                                <td>N/A</td>
+                                <td><span class="badge badge-danger">-8.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Tomi Fernandez</td>
+                                <td>Alpha School Miami</td>
+                                <td>6</td>
+                                <td>0</td>
+                                <td><span class="badge badge-danger">-8.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Adrienne Laswell</td>
+                                <td>Alpha High School</td>
+                                <td>9</td>
+                                <td>7</td>
+                                <td><span class="badge badge-danger">-8.00x</span></td>
+                                <td><span class="badge badge-danger">-4.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Ju Orloff</td>
+                                <td>Alpha School Miami</td>
+                                <td>10</td>
+                                <td>9</td>
+                                <td><span class="badge badge-danger">-8.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Zayen Szpitalak</td>
+                                <td>Alpha High School</td>
+                                <td>9</td>
+                                <td>8</td>
+                                <td><span class="badge badge-danger">-7.00x</span></td>
+                                <td><span class="badge badge-danger">-2.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Erika Rigby</td>
+                                <td>Alpha High School</td>
+                                <td>9</td>
+                                <td>12</td>
+                                <td><span class="badge badge-danger">-6.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Arjun Rana</td>
+                                <td>Montessorium Cedar Park</td>
+                                <td>6</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">-6.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Lily Gray</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>7</td>
+                                <td>N/A</td>
+                                <td><span class="badge badge-danger">-5.00x</span></td>
+                                <td><span class="badge badge-success">3.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Reed Robertson</td>
+                                <td>Alpha School Austin</td>
+                                <td>3</td>
+                                <td>N/A</td>
+                                <td><span class="badge badge-danger">-5.00x</span></td>
+                                <td><span class="badge badge-warning">0.67x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Colton Bellamy</td>
+                                <td>Alpha School Santa Barbara</td>
+                                <td>8</td>
+                                <td>4</td>
+                                <td><span class="badge badge-danger">-5.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Lincoln Thomas</td>
+                                <td>Alpha High School</td>
+                                <td>10</td>
+                                <td>5</td>
+                                <td><span class="badge badge-danger">-5.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Stella Cole</td>
+                                <td>Alpha High School</td>
+                                <td>10</td>
+                                <td>10</td>
+                                <td><span class="badge badge-danger">-4.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Mollie McDougald</td>
+                                <td>Alpha High School</td>
+                                <td>10</td>
+                                <td>8</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Aheli Shah</td>
+                                <td>Alpha High School</td>
+                                <td>9</td>
+                                <td>9</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Mila Tinkler</td>
+                                <td>Alpha School Scottsdale</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Lydia Cobas</td>
+                                <td>Alpha School Miami</td>
+                                <td>6</td>
+                                <td>6</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Bella Barba</td>
+                                <td>Alpha School Miami</td>
+                                <td>7</td>
+                                <td>5</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td><span class="badge badge-warning">1.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Mateo Sanchez</td>
+                                <td>Alpha School Miami</td>
+                                <td>4</td>
+                                <td>3</td>
+                                <td><span class="badge badge-danger">-1.50x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Lisa Olson</td>
+                                <td>Nova Academy Bastrop</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td><span class="badge badge-danger">-1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Jackson Price</td>
+                                <td>Alpha High School</td>
+                                <td>10</td>
+                                <td>7</td>
+                                <td><span class="badge badge-danger">-1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Santiago Vasquez Lazo</td>
+                                <td>Alpha School Miami</td>
+                                <td>6</td>
+                                <td>6</td>
+                                <td><span class="badge badge-danger">-1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Luke Hock</td>
+                                <td>Alpha School Austin</td>
+                                <td>6</td>
+                                <td>5</td>
+                                <td><span class="badge badge-danger">-1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Giulia Scandella</td>
+                                <td>Alpha School Miami</td>
+                                <td>5</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">-0.67x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Clara Modlin</td>
+                                <td>Montessorium Cedar Park</td>
+                                <td>3</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">-0.50x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Reuben Runacres</td>
+                                <td>Alpha High School</td>
+                                <td>12</td>
+                                <td>3</td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Cruce Saunders IV</td>
+                                <td>Alpha High School</td>
+                                <td>11</td>
+                                <td>10</td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Caleb Walker</td>
+                                <td>Alpha High School</td>
+                                <td>11</td>
+                                <td>9</td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Garret Farnham</td>
+                                <td>Alpha School Scottsdale</td>
+                                <td>6</td>
+                                <td>4</td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Izzy Vicente</td>
+                                <td>Alpha School Miami</td>
+                                <td>9</td>
+                                <td>6</td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Grey Walker</td>
+                                <td>Alpha High School</td>
+                                <td>9</td>
+                                <td>8</td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Lex DeMaree</td>
+                                <td>Alpha School Scottsdale</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">0.33x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Calvin Barraza</td>
+                                <td>GT School</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">0.80x</span></td>
+                                <td><span class="badge badge-danger">-0.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Sara Beth Way</td>
+                                <td>Alpha High School</td>
+                                <td>11</td>
+                                <td>N/A</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Malaika Negrete</td>
+                                <td>Alpha High School</td>
+                                <td>11</td>
+                                <td>7</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Ozzie Lowe</td>
+                                <td>Alpha School Miami</td>
+                                <td>6</td>
+                                <td>3</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Sloka Vudumu</td>
+                                <td>Alpha High School</td>
+                                <td>11</td>
+                                <td>12</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Emma Correa</td>
+                                <td>Alpha School Miami</td>
+                                <td>7</td>
+                                <td>3</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Ramsey Levin</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>5</td>
+                                <td>9</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Boris Dudarev</td>
+                                <td>Alpha School Miami</td>
+                                <td>9</td>
+                                <td>10</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">Showing students with F-W < 1.5x. Additional students flagged for low W-W only (while F-W >= 1.5x) are listed below.</p>
+                </div>
+            </div>
+
+            <!-- Low W-W only students -->
+            <div class="card">
+                <div class="card-header">Additional W-W Concerns (F-W >= 1.5x but W-W < 1.0x)</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">These students achieved acceptable F-W growth but show concerning W-W performance.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>F-W Growth</th>
+                                <th>W-W Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Amelia Gabler</td>
+                                <td>Alpha School Brownsville</td>
+                                <td><span class="badge badge-success">2.00x</span></td>
+                                <td><span class="badge badge-danger">0.91x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Raphael Shinar</td>
+                                <td>Alpha School Austin</td>
+                                <td><span class="badge badge-success">2.17x</span></td>
+                                <td><span class="badge badge-danger">0.36x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Vivian Ajouz</td>
+                                <td>Alpha School Austin</td>
+                                <td><span class="badge badge-success">2.50x</span></td>
+                                <td><span class="badge badge-danger">0.58x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Sydney Barba</td>
+                                <td>Alpha School Miami</td>
+                                <td><span class="badge badge-success">3.00x</span></td>
+                                <td><span class="badge badge-danger">0.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Evelyn Gabler</td>
+                                <td>Alpha School Brownsville</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td><span class="badge badge-danger">0.50x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Ross Margraves</td>
+                                <td>Alpha High School</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td><span class="badge badge-danger">-5.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Brett Noel</td>
+                                <td>Alpha School Austin</td>
+                                <td><span class="badge badge-success">5.00x</span></td>
+                                <td><span class="badge badge-danger">0.89x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Jacob Kuchinsky</td>
+                                <td>Alpha High School</td>
+                                <td><span class="badge badge-success">9.00x</span></td>
+                                <td><span class="badge badge-danger">-2.50x</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem;"><strong>Pattern:</strong> Strong F-W performance doesn't guarantee W-W success. These students may have experienced significant summer learning loss or other factors affecting year-over-year progress.</p>
+                </div>
+            </div>
+
+            <!-- Distribution by Campus -->
+            <div class="card">
+                <div class="card-header">Deep Dive Students by Campus</div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campus</th>
+                                <th>Deep Dive Students</th>
+                                <th>Total Students</th>
+                                <th>% Flagged</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="danger-row">
+                                <td><strong>Alpha High School</strong></td>
+                                <td>17</td>
+                                <td>36</td>
+                                <td><span class="badge badge-danger">47%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Miami</td>
+                                <td>13</td>
+                                <td>42</td>
+                                <td><span class="badge badge-warning">31%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Brownsville</td>
+                                <td>5</td>
+                                <td>19</td>
+                                <td><span class="badge badge-warning">26%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Scottsdale</td>
+                                <td>3</td>
+                                <td>8</td>
+                                <td><span class="badge badge-warning">38%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Austin</td>
+                                <td>5</td>
+                                <td>16</td>
+                                <td><span class="badge badge-warning">31%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Montessorium Cedar Park</td>
+                                <td>2</td>
+                                <td>5</td>
+                                <td><span class="badge badge-warning">40%</span></td>
+                            </tr>
+                            <tr>
+                                <td>GT School</td>
+                                <td>1</td>
+                                <td>5</td>
+                                <td>20%</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School San Francisco</td>
+                                <td>1</td>
+                                <td>7</td>
+                                <td>14%</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Santa Barbara</td>
+                                <td>1</td>
+                                <td>7</td>
+                                <td>14%</td>
+                            </tr>
+                            <tr>
+                                <td>Nova Academy Bastrop</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">100%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
