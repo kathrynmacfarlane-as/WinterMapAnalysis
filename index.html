@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Early Years Reading - Executive Summary</title>
+    <title>Early Years Reading - By Rostered Grade</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #2563eb;
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
             --gray-600: #4b5563;
             --gray-800: #1f2937;
         }
@@ -29,7 +31,7 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
 
         header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #5b21b6 100%);
             color: white;
             padding: 2rem;
             border-radius: 1rem;
@@ -38,11 +40,22 @@
 
         header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
         header p { opacity: 0.9; }
+        .badge-new {
+            display: inline-block;
+            background: #fbbf24;
+            color: #1f2937;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
 
         .tabs {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .tab {
@@ -105,6 +118,15 @@
         .success { color: var(--success); }
         .warning { color: var(--warning); }
         .danger { color: var(--danger); }
+        .primary { color: var(--primary); }
+
+        .info-box {
+            background: #ede9fe;
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
 
         .success-box {
             background: #d1fae5;
@@ -122,30 +144,13 @@
             margin-bottom: 1rem;
         }
 
-        .action-item {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--gray-50);
-            border-radius: 0.5rem;
-            margin-bottom: 0.75rem;
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
         }
-
-        .action-number {
-            width: 2rem;
-            height: 2rem;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .action-content h4 { margin-bottom: 0.25rem; }
-        .action-content p { color: var(--gray-600); font-size: 0.9rem; }
 
         table {
             width: 100%;
@@ -173,13 +178,38 @@
         .badge-success { background: #d1fae5; color: #065f46; }
         .badge-warning { background: #fef3c7; color: #92400e; }
         .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-purple { background: #ede9fe; color: #5b21b6; }
 
-        .chart-container {
-            position: relative;
-            height: 300px;
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .comparison-box {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background: var(--gray-50);
+        }
+
+        .comparison-box h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .comparison-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-200);
         }
 
         .highlight-row { background: #fef3c7 !important; }
+        .danger-row { background: #fee2e2 !important; }
+
+        @media (max-width: 768px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -189,8 +219,16 @@
             <p>Winter 2026 MAP Analysis | Executive Summary</p>
         </header>
 
+        <!-- Classification Disclaimer -->
+        <div class="card" style="border: 2px solid var(--primary); margin-bottom: 1.5rem;">
+            <div class="card-body" style="background: #ede9fe; padding: 1rem 1.5rem;">
+                <p style="margin: 0;"><strong>Note:</strong> This report uses <strong>rostered grade</strong> (curriculum level) to classify Early Years students, not age-grade. Other subject DRIs may use age-grade. <a href="early_years_by_age_grade.html" style="color: #5b21b6; font-weight: 600;">View age-grade version</a></p>
+            </div>
+        </div>
+
         <div class="tabs">
             <button class="tab active" onclick="showSection('summary')">Executive Summary</button>
+            <button class="tab" onclick="showSection('campus')">Campus Breakdown</button>
             <button class="tab" onclick="showSection('deepdive')">Students for Deep Dive</button>
         </div>
 
@@ -203,291 +241,869 @@
                 <div class="card-body">
                     <div class="metric-grid">
                         <div class="metric">
-                            <div class="value success">72%</div>
+                            <div class="value primary">218</div>
+                            <div class="label">Students in Early Lit (Rostered K-2)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value success">71%</div>
                             <div class="label">Met 2x F-W Target</div>
                         </div>
                         <div class="metric">
-                            <div class="value danger">14%</div>
-                            <div class="label">Met 2x W-W Target</div>
+                            <div class="value warning">2.75x</div>
+                            <div class="label">Median F-W Growth</div>
                         </div>
                         <div class="metric">
-                            <div class="value warning">34%</div>
-                            <div class="label">On Track for Spring 2x</div>
+                            <div class="value danger">0%</div>
+                            <div class="label">Met 2x W-W Target</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Success Story -->
+            <!-- Key Insight -->
             <div class="card">
-                <div class="card-header" style="background: #d1fae5;">✓ Where We Succeeded</div>
+                <div class="card-header" style="background: #d1fae5;">Key Insight</div>
                 <div class="card-body">
                     <div class="success-box">
-                        <h4>Fall-to-Winter Growth: Strong Performance</h4>
-                        <p style="margin-top: 0.5rem;"><strong>72% of students achieved our 2x growth target</strong> during the school period. Median growth was 2.75x. This demonstrates that our curriculum and ClearFluency implementation IS working when students are actively engaged.</p>
+                        <h4>Results Are Consistent Regardless of Classification Method</h4>
+                        <p style="margin-top: 0.5rem;">Whether we classify by age-grade or rostered grade, the core findings remain the same:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Median F-W growth: <strong>2.75x</strong> (same for both methods)</li>
+                            <li>Met 2x F-W target: <strong>71%</strong> (same for both methods)</li>
+                            <li>The 85 older students in early lit have a median F-W of <strong>3.50x</strong> - performing well</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;">This validates that our curriculum is working across all ages. The challenge remains <strong>summer learning loss</strong>, not curriculum effectiveness.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Problem Area -->
+            <!-- Nova Austin Alert -->
             <div class="card">
-                <div class="card-header" style="background: #fee2e2;">✗ Where We Did Not Meet 2x</div>
+                <div class="card-header" style="background: #fee2e2;">Campus Alert: Nova Academy Austin</div>
                 <div class="card-body">
                     <div class="danger-box">
-                        <h4>Winter-to-Winter Growth: Summer Loss Erasing Gains</h4>
-                        <p style="margin-top: 0.5rem;"><strong>Only 14% met the 2x W-W target.</strong> Median growth was just 1.18x. Students are making strong progress during school, but summer learning loss (avg 3.5 RIT points, some losing 20+ points) is erasing their gains.</p>
+                        <h4>Nova Austin Remains a Critical Outlier</h4>
+                        <p style="margin-top: 0.5rem;">With 14 students in early literacy (by rostered grade), Nova Austin shows:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Median F-W growth: <strong>1.13x</strong> (network median: 2.75x)</li>
+                            <li>Met 2x F-W: <strong>0%</strong> (network: 71%)</li>
+                            <li>This is the only campus with 0% meeting the 2x target</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;"><strong>Immediate investigation needed</strong> on curriculum implementation and ClearFluency usage.</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Implications -->
+            <div class="card">
+                <div class="card-header">What This Means for Reporting</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem;">Using rostered grade provides a more accurate picture of early literacy performance because:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Consideration</th>
+                                <th>Age-Grade Classification</th>
+                                <th>Rostered-Grade Classification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Population Size</td>
+                                <td>146 students</td>
+                                <td><strong>218 students</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Includes Older Remedial Students</td>
+                                <td>No (in G3+ report)</td>
+                                <td><strong>Yes (85 students)</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Includes Accelerated K-2 Students</td>
+                                <td>Yes (wrongly included)</td>
+                                <td><strong>No (13 in G3+ report)</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Reflects Actual Reading Level</td>
+                                <td>No</td>
+                                <td><strong>Yes</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem;"><strong>Recommendation:</strong> Use rostered grade for curriculum effectiveness analysis. Use age-grade for demographic reporting only.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPARISON TAB -->
+        <div id="comparison" class="section">
+            <div class="card">
+                <div class="card-header">Age-Grade vs Rostered-Grade Classification Comparison</div>
+                <div class="card-body">
+                    <div class="comparison-grid">
+                        <div class="comparison-box" style="border: 2px solid var(--gray-200);">
+                            <h4>By Age-Grade (Original Report)</h4>
+                            <div class="comparison-stat">
+                                <span>Total Students</span>
+                                <strong>146</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Students with F-W Data</span>
+                                <strong>102</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Median F-W Growth</span>
+                                <strong>2.75x</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Met 2x F-W Target</span>
+                                <strong>71%</strong>
+                            </div>
+                            <div class="comparison-stat" style="border: none;">
+                                <span>Criteria</span>
+                                <span class="badge badge-warning">Age K-2</span>
+                            </div>
+                        </div>
+                        <div class="comparison-box" style="border: 2px solid var(--primary);">
+                            <h4>By Rostered Grade (This Report)</h4>
+                            <div class="comparison-stat">
+                                <span>Total Students</span>
+                                <strong>218</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Students with F-W Data</span>
+                                <strong>129</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Median F-W Growth</span>
+                                <strong>2.75x</strong>
+                            </div>
+                            <div class="comparison-stat">
+                                <span>Met 2x F-W Target</span>
+                                <strong>71%</strong>
+                            </div>
+                            <div class="comparison-stat" style="border: none;">
+                                <span>Criteria</span>
+                                <span class="badge badge-purple">Rostered K-2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Students Reclassified</div>
+                <div class="card-body">
+                    <div class="warning-box">
+                        <h4>85 Older Students Now in Early Years Report</h4>
+                        <p style="margin-top: 0.5rem;">These students are age 3+ but working in early literacy (rostered grades K-2). Their F-W median is <strong>3.50x</strong>, indicating strong performance despite working below grade level.</p>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Age Grade</th>
+                                <th>HMG</th>
+                                <th>Rostered Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Seth Anders</td>
+                                <td>Strata</td>
+                                <td>9</td>
+                                <td>0</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Carter Tinkler</td>
+                                <td>Alpha School Scottsdale</td>
+                                <td>5</td>
+                                <td>0</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Victoria Marin Barrios</td>
+                                <td>Nova Academy Austin</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Sofia Stone</td>
+                                <td>Alpha School Plano</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Jay Lever</td>
+                                <td>Texas Sports Academy</td>
+                                <td>5</td>
+                                <td>1</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td>Orion Lira</td>
+                                <td>Nova Academy Bastrop</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>Zander Halili</td>
+                                <td>Montessorium Cedar Park</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">Showing 7 of 85 reclassified students. Full list available in data export.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Students Moved to G3+ Report</div>
+                <div class="card-body">
+                    <div class="info-box">
+                        <h4>13 Younger Students Now in G3+ Report</h4>
+                        <p style="margin-top: 0.5rem;">These students are age K-2 but have advanced to G3+ reading. They should be tracked in the G3+ report for accurate curriculum effectiveness measurement.</p>
+                    </div>
+                    <p style="color: var(--gray-600); font-size: 0.9rem;">Examples: Conan Hogan (Age 2, HMG 4), Willa Rubenstein (Age 2), Grade1 Shadow1 (Age 1)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIME-BASED ANALYSIS TAB -->
+        <div id="timebased" class="section">
+            <div class="card">
+                <div class="card-header">Analysis: Students Who Spent >75% of Year in Early Years Reading</div>
+                <div class="card-body">
+                    <div class="info-box">
+                        <h4>Methodology</h4>
+                        <p style="margin-top: 0.5rem;">We analyzed reading test results to identify G3+ students who spent significant time in early years reading this year:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Students who passed Grade 2 placement test went straight to G3+ (0% EY time)</li>
+                            <li>For other students, we calculated time from school start (Aug 13) or first placement test to Grade 2 mastery</li>
+                            <li>Students with 3+ early years tests who never passed G2 are considered "still in EY" (100% time)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" style="background: #d1fae5;">Key Finding: Minimal Impact on Results</div>
+                <div class="card-body">
+                    <div class="success-box">
+                        <h4>The Rostered Grade Classification Already Captures Most High-EY Students</h4>
+                        <p style="margin-top: 0.5rem;">Of the G3+ students who spent >75% of their school year in early years reading:</p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li><strong>125 students</strong> total spent >75% of year in early years</li>
+                            <li><strong>108 (86%)</strong> are already classified as Early Lit by the existing flag</li>
+                            <li><strong>Only 1 additional student</strong> with meaningful engagement (3+ tests) gets added</li>
+                            <li>This student has no MAP growth data, so there's no impact on results</li>
+                        </ul>
+                    </div>
+
+                    <table style="margin-top: 1rem;">
+                        <thead>
+                            <tr>
+                                <th>Classification Method</th>
+                                <th>Students</th>
+                                <th>With F-W Data</th>
+                                <th>Median F-W</th>
+                                <th>Met 2x F-W</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Rostered Grade (current)</td>
+                                <td>218</td>
+                                <td>129</td>
+                                <td>2.75x</td>
+                                <td>71%</td>
+                            </tr>
+                            <tr>
+                                <td>Rostered + >75% EY time</td>
+                                <td>219</td>
+                                <td>129</td>
+                                <td>2.75x</td>
+                                <td>71%</td>
+                            </tr>
+                            <tr>
+                                <td>Rostered + >50% EY time</td>
+                                <td>224</td>
+                                <td>130</td>
+                                <td>2.75x</td>
+                                <td>72%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;"><strong>Conclusion:</strong> Expanding the classification to include students by time spent doesn't meaningfully change the results because the added students either don't have MAP data or are already captured.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">G3+ Students Who Spent >50% Time in Early Years</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">These students are currently classified as G3+ but spent more than half their school year working through early years reading.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Age Grade</th>
+                                <th>HMG</th>
+                                <th>EY Tests</th>
+                                <th>% in EY</th>
+                                <th>F-W Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Arjun Caberwal</td>
+                                <td>Alpha School Austin</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>3</td>
+                                <td>52%</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Justin Rodriguez</td>
+                                <td>Alpha School Miami</td>
+                                <td>9</td>
+                                <td>9</td>
+                                <td>3</td>
+                                <td>54%</td>
+                                <td><span class="badge badge-success">2.00x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Nova Victore</td>
+                                <td>GT School</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td>5</td>
+                                <td>53%</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Renee Parnell</td>
+                                <td>Strata</td>
+                                <td>6</td>
+                                <td>3</td>
+                                <td>7</td>
+                                <td>65%</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>dilling Lugo Marquez</td>
+                                <td>Nova Academy Austin</td>
+                                <td>4</td>
+                                <td>N/A</td>
+                                <td>3</td>
+                                <td>100%</td>
+                                <td>N/A</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);"><strong>Note:</strong> Most of these students have no MAP growth data, which is why they don't impact the overall metrics when included.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Why the Overlap Is So High</div>
+                <div class="card-body">
+                    <p>The rostered grade classification already captures most students who spent significant time in early years because:</p>
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+                        <li><strong>HMG reflects recent mastery</strong> - Students with HMG 0-2 are still working through early lit</li>
+                        <li><strong>Early Lit flag is accurate</strong> - 86% of high-EY-time students already have Early Lit = YES</li>
+                        <li><strong>Recently advanced students</strong> - Students who just mastered G2 have high HMG (3+) but spent most of their time in EY</li>
+                    </ul>
+                    <p>The only gap is students who:</p>
+                    <ol style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                        <li>Recently mastered G2 (so HMG > 2)</li>
+                        <li>Don't have a current rostered grade set</li>
+                        <li>Have Early Lit = NO flag</li>
+                    </ol>
+                    <p style="margin-top: 1rem;">This gap is very small (6 students total with >50% EY time not captured) and most lack MAP data.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAMPUS TAB -->
+        <div id="campus" class="section">
+            <div class="card">
+                <div class="card-header">Campus Performance - Early Years by Rostered Grade</div>
+                <div class="card-body">
                     <table>
                         <thead>
                             <tr>
                                 <th>Campus</th>
                                 <th>Students</th>
+                                <th>F-W Median</th>
+                                <th>Met 2x F-W</th>
+                                <th>W-W Median</th>
                                 <th>Met 2x W-W</th>
-                                <th>Median Growth</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>Alpha School Austin</td>
-                                <td>25</td>
-                                <td><span class="badge badge-danger">8%</span></td>
+                                <td>50</td>
+                                <td><span class="badge badge-success">3.67x</span></td>
+                                <td>81%</td>
                                 <td>1.18x</td>
-                            </tr>
-                            <tr>
-                                <td>Alpha School Brownsville</td>
-                                <td>21</td>
-                                <td><span class="badge badge-danger">19%</span></td>
-                                <td>1.00x</td>
+                                <td>0%</td>
                             </tr>
                             <tr>
                                 <td>Alpha School Miami</td>
-                                <td>4</td>
-                                <td><span class="badge badge-warning">25%</span></td>
-                                <td>1.61x</td>
+                                <td>27</td>
+                                <td><span class="badge badge-success">3.23x</span></td>
+                                <td>77%</td>
+                                <td>1.29x</td>
+                                <td>0%</td>
                             </tr>
-                            <tr class="highlight-row">
+                            <tr>
+                                <td>Texas Sports Academy</td>
+                                <td>26</td>
+                                <td><span class="badge badge-warning">2.00x</span></td>
+                                <td>57%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Brownsville</td>
+                                <td>19</td>
+                                <td><span class="badge badge-success">2.50x</span></td>
+                                <td>56%</td>
+                                <td><span class="badge badge-danger">0.92x</span></td>
+                                <td>0%</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Scottsdale</td>
+                                <td>15</td>
+                                <td><span class="badge badge-success">2.50x</span></td>
+                                <td>69%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr class="danger-row">
                                 <td><strong>Nova Academy Austin</strong></td>
-                                <td>7</td>
-                                <td><span class="badge badge-danger">14%</span></td>
-                                <td>1.39x</td>
+                                <td>14</td>
+                                <td><span class="badge badge-danger">1.13x</span></td>
+                                <td><strong>0%</strong></td>
+                                <td>1.13x</td>
+                                <td>0%</td>
+                            </tr>
+                            <tr>
+                                <td>Montessorium Cedar Park</td>
+                                <td>11</td>
+                                <td><span class="badge badge-success">4.67x</span></td>
+                                <td>100%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha Anywhere Center</td>
+                                <td>11</td>
+                                <td><span class="badge badge-success">2.62x</span></td>
+                                <td>71%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Nova Academy Bastrop</td>
+                                <td>9</td>
+                                <td><span class="badge badge-success">3.62x</span></td>
+                                <td>75%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Strata</td>
+                                <td>9</td>
+                                <td><span class="badge badge-success">3.50x</span></td>
+                                <td>100%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>GT School</td>
+                                <td>8</td>
+                                <td><span class="badge badge-success">4.00x</span></td>
+                                <td>100%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School San Francisco</td>
+                                <td>5</td>
+                                <td><span class="badge badge-success">5.67x</span></td>
+                                <td>80%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Palm Beach</td>
+                                <td>4</td>
+                                <td><span class="badge badge-success">2.48x</span></td>
+                                <td>100%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Fort Worth</td>
+                                <td>4</td>
+                                <td><span class="badge badge-success">9.45x</span></td>
+                                <td>50%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="card">
-                <div class="card-header">4 Key Actions for Spring-to-Spring 2x</div>
-                <div class="card-body">
-                    <p style="margin-bottom: 1rem; font-weight: 600;">For Spring 2026 (immediate actions):</p>
-                    <div class="action-item">
-                        <div class="action-number">1</div>
-                        <div class="action-content">
-                            <h4>Re-test Students Who Mastered via TTS</h4>
-                            <p><strong>Problem:</strong> "Aligned" students (ORF = HMG+1) have 34% severe underperformance rate. Some may have inflated HMG from passing tests by listening (TTS) rather than reading. <strong>Solution:</strong> Re-assess comprehension without TTS for low-growth students to identify true skill level.</p>
-                        </div>
-                    </div>
-                    <div class="action-item">
-                        <div class="action-number">2</div>
-                        <div class="action-content">
-                            <h4>Enforce Daily Reading Time</h4>
-                            <p><strong>Problem:</strong> 48% of students not meeting time expectations. <strong>Solution:</strong> Alert system for students falling behind, campus accountability for time-on-task metrics.</p>
-                        </div>
-                    </div>
-                    <div class="action-item">
-                        <div class="action-number">3</div>
-                        <div class="action-content">
-                            <h4>Investigate Nova Academy Austin</h4>
-                            <p><strong>Problem:</strong> F-W growth of only 1.10x vs 2.75x network median - severe outlier. <strong>Solution:</strong> Immediate deep dive on curriculum implementation and ClearFluency usage.</p>
-                        </div>
-                    </div>
-                    <p style="margin: 1.5rem 0 1rem; font-weight: 600;">For Next Year's W-W Results:</p>
-                    <div class="action-item">
-                        <div class="action-number">4</div>
-                        <div class="action-content">
-                            <h4>Summer Reading Maintenance Program</h4>
-                            <p><strong>Problem:</strong> 17% of students lost >10 RIT points over summer. These students have only 1.10x W-W growth. <strong>Solution:</strong> Mandatory minimum app usage, weekly check-ins during summer break. <em>(Won't help Spring 2026, but will improve next year's W-W results.)</em></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bottom Line -->
-            <div class="card">
-                <div class="card-header" style="background: var(--primary); color: white;">Bottom Line</div>
-                <div class="card-body">
-                    <p style="font-size: 1.1rem;"><strong>Our curriculum works during the school year</strong> (72% meeting 2x during F-W). The W-W gap is largely due to <strong>summer learning loss</strong>. For Spring 2026, we need to: (1) re-test students who may have inflated HMG from TTS, (2) ensure time on task, and (3) fix Nova Austin. Summer reading maintenance will help next year's W-W results.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);">Showing campuses with 4+ students. N/A indicates insufficient W-W data.</p>
                 </div>
             </div>
         </div>
 
-        <!-- DEEP DIVE STUDENTS TAB -->
+        <!-- DEEP DIVE TAB -->
         <div id="deepdive" class="section">
             <div class="card">
                 <div class="card-header">Students Requiring Deep Dive Investigation</div>
                 <div class="card-body">
-                    <p style="margin-bottom: 1rem; color: var(--gray-600);">These students meet one or more criteria: large summer drop (>10 pts), W-W growth below 1.0x, or Spring-to-Winter gain below 5 points. Total: <strong>39 students</strong></p>
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">Students with F-W growth below 1.5x or W-W growth below 1.0x. Sorted by F-W growth.</p>
 
                     <table>
                         <thead>
                             <tr>
                                 <th>Student</th>
                                 <th>Campus</th>
-                                <th>Summer Drop</th>
+                                <th>Age</th>
+                                <th>Rostered</th>
+                                <th>F-W Growth</th>
                                 <th>W-W Growth</th>
-                                <th>Spring→Winter Gain</th>
                                 <th>Flag</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Calvin Barraza</td>
-                                <td>GT School</td>
-                                <td><span class="badge badge-danger">-31 pts</span></td>
-                                <td><span class="badge badge-danger">-0.50x</span></td>
+                                <td>Tomi Fernandez</td>
+                                <td>Alpha School Miami</td>
+                                <td>6</td>
+                                <td>HMG 0</td>
+                                <td><span class="badge badge-danger">-8.00x</span></td>
                                 <td>N/A</td>
-                                <td>Largest summer loss</td>
+                                <td>Critical</td>
                             </tr>
                             <tr>
-                                <td>Ethan Bale</td>
-                                <td>Alpha Brownsville</td>
-                                <td><span class="badge badge-danger">-24 pts</span></td>
-                                <td><span class="badge badge-danger">0.79x</span></td>
+                                <td>Mila Tinkler</td>
+                                <td>Alpha School Scottsdale</td>
+                                <td>4</td>
+                                <td>HMG 2</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
                                 <td>N/A</td>
-                                <td>Large summer loss</td>
+                                <td>Critical</td>
                             </tr>
                             <tr>
-                                <td>Rivers Yong</td>
-                                <td>Alpha Austin</td>
-                                <td><span class="badge badge-danger">-18 pts</span></td>
-                                <td><span class="badge badge-success">2.23x</span></td>
-                                <td>+18 pts</td>
-                                <td>Recovered well</td>
+                                <td>Leila Abony</td>
+                                <td>Alpha School Austin</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">-2.00x</span></td>
+                                <td>N/A</td>
+                                <td>Critical</td>
                             </tr>
                             <tr>
-                                <td>Anthem Thomas</td>
-                                <td>Alpha Austin</td>
-                                <td><span class="badge badge-danger">-17 pts</span></td>
-                                <td><span class="badge badge-warning">1.50x</span></td>
-                                <td>+10 pts</td>
-                                <td>Large summer loss</td>
+                                <td>Leo Wright</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">-1.40x</span></td>
+                                <td>N/A</td>
+                                <td>Critical</td>
                             </tr>
                             <tr>
-                                <td>Victoria Leal</td>
-                                <td>Alpha Brownsville</td>
-                                <td><span class="badge badge-danger">-15 pts</span></td>
-                                <td><span class="badge badge-warning">1.22x</span></td>
-                                <td>+5 pts</td>
-                                <td>Large summer loss</td>
+                                <td>Giulia Scandella</td>
+                                <td>Alpha School Miami</td>
+                                <td>5</td>
+                                <td>HMG 2</td>
+                                <td><span class="badge badge-danger">-0.67x</span></td>
+                                <td>N/A</td>
+                                <td>Critical</td>
                             </tr>
                             <tr>
-                                <td>Blake Price</td>
-                                <td>Alpha Austin</td>
-                                <td><span class="badge badge-warning">-13 pts</span></td>
-                                <td><span class="badge badge-warning">1.77x</span></td>
-                                <td>+15 pts</td>
-                                <td>Recovering</td>
+                                <td>C.J. Wright</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>3</td>
+                                <td>N/A</td>
+                                <td><span class="badge badge-danger">-0.67x</span></td>
+                                <td>0.14x</td>
+                                <td>Critical</td>
                             </tr>
                             <tr>
-                                <td>Raphael Shinar</td>
-                                <td>Alpha Austin</td>
-                                <td><span class="badge badge-warning">-11 pts</span></td>
-                                <td><span class="badge badge-danger">0.36x</span></td>
-                                <td>+2 pts</td>
-                                <td>Not recovering</td>
+                                <td>London Politi</td>
+                                <td>Alpha Anywhere Center</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">-0.11x</span></td>
+                                <td>N/A</td>
+                                <td>Critical</td>
                             </tr>
                             <tr>
-                                <td>Gia Clark</td>
-                                <td>Alpha Austin</td>
-                                <td><span class="badge badge-warning">-10 pts</span></td>
-                                <td><span class="badge badge-danger">0.67x</span></td>
-                                <td>+1 pt</td>
-                                <td>Not recovering</td>
+                                <td>A'Leiah Jenkins</td>
+                                <td>Nova Academy Austin</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">0.12x</span></td>
+                                <td>0.73x</td>
+                                <td>Nova Austin</td>
                             </tr>
                             <tr>
-                                <td>Jimmy Moore</td>
-                                <td>Alpha Austin</td>
-                                <td>-3 pts</td>
-                                <td><span class="badge badge-danger">0.31x</span></td>
-                                <td>+8 pts</td>
-                                <td>Very low W-W</td>
-                            </tr>
-                            <tr>
-                                <td>Arden McCord</td>
-                                <td>Alpha Austin</td>
-                                <td>-1 pt</td>
-                                <td><span class="badge badge-danger">0.69x</span></td>
-                                <td>+10 pts</td>
-                                <td>Low W-W</td>
-                            </tr>
-                            <tr>
-                                <td>Vivian Ajouz</td>
-                                <td>Alpha Austin</td>
-                                <td>-1 pt</td>
-                                <td><span class="badge badge-danger">0.58x</span></td>
-                                <td>+9 pts</td>
-                                <td>Low W-W</td>
-                            </tr>
-                            <tr>
-                                <td>Reed Robertson</td>
-                                <td>Alpha Austin</td>
-                                <td>+5 pts (gained)</td>
-                                <td><span class="badge badge-danger">0.67x</span></td>
-                                <td>0 pts</td>
-                                <td>No Spring→Winter gain</td>
-                            </tr>
-                            <tr>
-                                <td>Elijah Knecht</td>
-                                <td>Alpha Austin</td>
-                                <td>-5 pts</td>
-                                <td><span class="badge badge-warning">1.25x</span></td>
-                                <td>0 pts</td>
-                                <td>No Spring→Winter gain</td>
-                            </tr>
-                            <tr>
-                                <td>Aiden Richardson</td>
-                                <td>Alpha Austin</td>
-                                <td>-4 pts</td>
-                                <td><span class="badge badge-warning">1.18x</span></td>
-                                <td><span class="badge badge-danger">-1 pt</span></td>
-                                <td>Losing ground</td>
+                                <td>Lex DeMaree</td>
+                                <td>Alpha School Scottsdale</td>
+                                <td>4</td>
+                                <td>HMG 2</td>
+                                <td><span class="badge badge-danger">0.33x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
                             </tr>
                             <tr>
                                 <td>Bash Salazar</td>
-                                <td>Alpha Brownsville</td>
-                                <td>0 pts</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>2</td>
+                                <td>2</td>
                                 <td><span class="badge badge-danger">0.50x</span></td>
-                                <td>+3 pts</td>
-                                <td>Very low W-W</td>
+                                <td>0.50x</td>
+                                <td>Low Both</td>
+                            </tr>
+                            <tr>
+                                <td>Jesse Crain, Jr</td>
+                                <td>Alpha School San Francisco</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">0.50x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Rafaela Almanza</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">0.50x</span></td>
+                                <td>0.89x</td>
+                                <td>Low Both</td>
+                            </tr>
+                            <tr>
+                                <td>Alana Marin Barrios</td>
+                                <td>Nova Academy Austin</td>
+                                <td>K</td>
+                                <td>0</td>
+                                <td><span class="badge badge-danger">0.77x</span></td>
+                                <td>N/A</td>
+                                <td>Nova Austin</td>
+                            </tr>
+                            <tr>
+                                <td>Scarlett Meyer</td>
+                                <td>Alpha School Scottsdale</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">0.80x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Megan Chukwura</td>
+                                <td>Nova Academy Austin</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">1.00x</span></td>
+                                <td>0.87x</td>
+                                <td>Nova Austin</td>
+                            </tr>
+                            <tr>
+                                <td>Analea Lopez</td>
+                                <td>Nova Academy Bastrop</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">1.00x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Jenny Thomason</td>
+                                <td>Texas Sports Academy</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td><span class="badge badge-danger">1.00x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Zarielle Vela</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>1.67x</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Shailene Ferrebus</td>
+                                <td>Nova Academy Austin</td>
+                                <td>K</td>
+                                <td>0</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                                <td>Nova Austin</td>
+                            </tr>
+                            <tr>
+                                <td>Savi Richardson</td>
+                                <td>Alpha School Austin</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">1.10x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Catherine Caballero</td>
+                                <td>Alpha School Miami</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">1.12x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Lucy Wilkinson</td>
+                                <td>Texas Sports Academy</td>
+                                <td>K</td>
+                                <td>0</td>
+                                <td><span class="badge badge-warning">1.21x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Justin Wooley Jr.</td>
+                                <td>Nova Academy Austin</td>
+                                <td>2</td>
+                                <td>0</td>
+                                <td><span class="badge badge-warning">1.27x</span></td>
+                                <td>1.39x</td>
+                                <td>Nova Austin</td>
+                            </tr>
+                            <tr>
+                                <td>Anthonella Ochoa</td>
+                                <td>Nova Academy Austin</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">1.27x</span></td>
+                                <td>N/A</td>
+                                <td>Nova Austin</td>
+                            </tr>
+                            <tr>
+                                <td>Hayden Jones</td>
+                                <td>Alpha School Austin</td>
+                                <td>K</td>
+                                <td>0</td>
+                                <td><span class="badge badge-warning">1.33x</span></td>
+                                <td>N/A</td>
+                                <td>Low F-W</td>
+                            </tr>
+                            <tr>
+                                <td>Luisela Almanza</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">1.44x</span></td>
+                                <td>0.83x</td>
+                                <td>Low W-W</td>
                             </tr>
                         </tbody>
                     </table>
-
-                    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--gray-600);"><strong>Note:</strong> Summer Drop shows RIT points lost (negative = loss). Students who lost >10 points over summer AND have low W-W growth are highest priority for intervention.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray-600);"><strong>Note:</strong> "HMG X" indicates rostered grade was inferred from Highest Mastered Grade when rostered grade was not explicitly set.</p>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-header">Nova Academy Austin - All Students</div>
+                <div class="card-header" style="background: #fee2e2;">Nova Academy Austin - All Early Lit Students</div>
                 <div class="card-body">
-                    <p style="margin-bottom: 1rem; color: var(--gray-600);">Nova Austin has the lowest F-W growth (1.10x avg) of any campus. All students need review.</p>
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">Nova Austin has the lowest F-W growth (1.13x median) of any campus. All 14 early lit students need review.</p>
                     <table>
                         <thead>
                             <tr>
                                 <th>Student</th>
+                                <th>Age Grade</th>
+                                <th>Rostered</th>
                                 <th>F-W Growth</th>
-                                <th>Status</th>
+                                <th>W-W Growth</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>All Nova Austin Early Years students (n=11)</td>
-                                <td><span class="badge badge-danger">1.10x avg</span></td>
-                                <td>Immediate campus-wide investigation needed</td>
+                                <td>A'Leiah Jenkins</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">0.12x</span></td>
+                                <td>0.73x</td>
+                            </tr>
+                            <tr>
+                                <td>Alana Marin Barrios</td>
+                                <td>K</td>
+                                <td>0</td>
+                                <td><span class="badge badge-danger">0.77x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Megan Chukwura</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">1.00x</span></td>
+                                <td>0.87x</td>
+                            </tr>
+                            <tr>
+                                <td>Shailene Ferrebus</td>
+                                <td>K</td>
+                                <td>0</td>
+                                <td><span class="badge badge-warning">1.00x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Justin Wooley Jr.</td>
+                                <td>2</td>
+                                <td>0</td>
+                                <td><span class="badge badge-warning">1.27x</span></td>
+                                <td>1.39x</td>
+                            </tr>
+                            <tr>
+                                <td>Anthonella Ochoa</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">1.27x</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Victoria Marin Barrios</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Kamila Gonzalez-Romero</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
                             </tr>
                         </tbody>
                     </table>
+                    <p style="margin-top: 1rem;"><strong>Action Required:</strong> Immediate campus-wide investigation on ClearFluency usage, time on task, and curriculum implementation.</p>
                 </div>
             </div>
         </div>
@@ -500,8 +1116,6 @@
             document.getElementById(sectionId).classList.add('active');
             event.target.classList.add('active');
         }
-
-        // No chart needed - simplified
     </script>
 </body>
 </html>

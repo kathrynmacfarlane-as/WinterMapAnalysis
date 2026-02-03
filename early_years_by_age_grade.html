@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Early Years Reading - Executive Summary</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+        header p { opacity: 0.9; }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--gray-100);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab:hover { border-color: var(--primary); }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--gray-100);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-body { padding: 1.5rem; }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+        }
+
+        .metric .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .metric .label {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .success { color: var(--success); }
+        .warning { color: var(--warning); }
+        .danger { color: var(--danger); }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid var(--success);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .danger-box {
+            background: #fee2e2;
+            border-left: 4px solid var(--danger);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .action-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .action-number {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .action-content h4 { margin-bottom: 0.25rem; }
+        .action-content p { color: var(--gray-600); font-size: 0.9rem; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        th { background: var(--gray-50); font-weight: 600; }
+
+        tr:hover { background: var(--gray-50); }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .highlight-row { background: #fef3c7 !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Early Years Reading Results</h1>
+            <p>Winter 2026 MAP Analysis | Executive Summary</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('summary')">Executive Summary</button>
+            <button class="tab" onclick="showSection('deepdive')">Students for Deep Dive</button>
+        </div>
+
+        <!-- Report Version Notice -->
+        <div class="card" style="border: 2px solid #7c3aed; margin-bottom: 1.5rem;">
+            <div class="card-body" style="background: #ede9fe; padding: 1rem 1.5rem;">
+                <p style="margin: 0;"><strong>Note:</strong> This report classifies students by <strong>age-grade</strong>. The primary Early Years report uses <strong>rostered grade</strong> (curriculum level): <a href="index.html" style="color: #7c3aed; font-weight: 600;">View main report</a></p>
+            </div>
+        </div>
+
+        <!-- EXECUTIVE SUMMARY TAB -->
+        <div id="summary" class="section active">
+
+            <!-- Key Metrics -->
+            <div class="card">
+                <div class="card-header">Key Results at a Glance</div>
+                <div class="card-body">
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <div class="value success">72%</div>
+                            <div class="label">Met 2x F-W Target</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value danger">14%</div>
+                            <div class="label">Met 2x W-W Target</div>
+                        </div>
+                        <div class="metric">
+                            <div class="value warning">34%</div>
+                            <div class="label">On Track for Spring 2x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Story -->
+            <div class="card">
+                <div class="card-header" style="background: #d1fae5;">✓ Where We Succeeded</div>
+                <div class="card-body">
+                    <div class="success-box">
+                        <h4>Fall-to-Winter Growth: Strong Performance</h4>
+                        <p style="margin-top: 0.5rem;"><strong>72% of students achieved our 2x growth target</strong> during the school period. Median growth was 2.75x. This demonstrates that our curriculum and ClearFluency implementation IS working when students are actively engaged.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Problem Area -->
+            <div class="card">
+                <div class="card-header" style="background: #fee2e2;">✗ Where We Did Not Meet 2x</div>
+                <div class="card-body">
+                    <div class="danger-box">
+                        <h4>Winter-to-Winter Growth: Summer Loss Erasing Gains</h4>
+                        <p style="margin-top: 0.5rem;"><strong>Only 14% met the 2x W-W target.</strong> Median growth was just 1.18x. Students are making strong progress during school, but summer learning loss (avg 3.5 RIT points, some losing 20+ points) is erasing their gains.</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campus</th>
+                                <th>Students</th>
+                                <th>Met 2x W-W</th>
+                                <th>Median Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Alpha School Austin</td>
+                                <td>25</td>
+                                <td><span class="badge badge-danger">8%</span></td>
+                                <td>1.18x</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Brownsville</td>
+                                <td>21</td>
+                                <td><span class="badge badge-danger">19%</span></td>
+                                <td>1.00x</td>
+                            </tr>
+                            <tr>
+                                <td>Alpha School Miami</td>
+                                <td>4</td>
+                                <td><span class="badge badge-warning">25%</span></td>
+                                <td>1.61x</td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td><strong>Nova Academy Austin</strong></td>
+                                <td>7</td>
+                                <td><span class="badge badge-danger">14%</span></td>
+                                <td>1.39x</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card">
+                <div class="card-header">4 Key Actions for Spring-to-Spring 2x</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; font-weight: 600;">For Spring 2026 (immediate actions):</p>
+                    <div class="action-item">
+                        <div class="action-number">1</div>
+                        <div class="action-content">
+                            <h4>Re-test Students Who Mastered via TTS</h4>
+                            <p><strong>Problem:</strong> "Aligned" students (ORF = HMG+1) have 34% severe underperformance rate. Some may have inflated HMG from passing tests by listening (TTS) rather than reading. <strong>Solution:</strong> Re-assess comprehension without TTS for low-growth students to identify true skill level.</p>
+                        </div>
+                    </div>
+                    <div class="action-item">
+                        <div class="action-number">2</div>
+                        <div class="action-content">
+                            <h4>Enforce Daily Reading Time</h4>
+                            <p><strong>Problem:</strong> 48% of students not meeting time expectations. <strong>Solution:</strong> Alert system for students falling behind, campus accountability for time-on-task metrics.</p>
+                        </div>
+                    </div>
+                    <div class="action-item">
+                        <div class="action-number">3</div>
+                        <div class="action-content">
+                            <h4>Investigate Nova Academy Austin</h4>
+                            <p><strong>Problem:</strong> F-W growth of only 1.10x vs 2.75x network median - severe outlier. <strong>Solution:</strong> Immediate deep dive on curriculum implementation and ClearFluency usage.</p>
+                        </div>
+                    </div>
+                    <p style="margin: 1.5rem 0 1rem; font-weight: 600;">For Next Year's W-W Results:</p>
+                    <div class="action-item">
+                        <div class="action-number">4</div>
+                        <div class="action-content">
+                            <h4>Summer Reading Maintenance Program</h4>
+                            <p><strong>Problem:</strong> 17% of students lost >10 RIT points over summer. These students have only 1.10x W-W growth. <strong>Solution:</strong> Mandatory minimum app usage, weekly check-ins during summer break. <em>(Won't help Spring 2026, but will improve next year's W-W results.)</em></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Line -->
+            <div class="card">
+                <div class="card-header" style="background: var(--primary); color: white;">Bottom Line</div>
+                <div class="card-body">
+                    <p style="font-size: 1.1rem;"><strong>Our curriculum works during the school year</strong> (72% meeting 2x during F-W). The W-W gap is largely due to <strong>summer learning loss</strong>. For Spring 2026, we need to: (1) re-test students who may have inflated HMG from TTS, (2) ensure time on task, and (3) fix Nova Austin. Summer reading maintenance will help next year's W-W results.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEEP DIVE STUDENTS TAB -->
+        <div id="deepdive" class="section">
+            <div class="card">
+                <div class="card-header">Students Requiring Deep Dive Investigation</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">These students meet one or more criteria: large summer drop (>10 pts), W-W growth below 1.0x, or Spring-to-Winter gain below 5 points. Total: <strong>39 students</strong></p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Campus</th>
+                                <th>Summer Drop</th>
+                                <th>W-W Growth</th>
+                                <th>Spring→Winter Gain</th>
+                                <th>Flag</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Calvin Barraza</td>
+                                <td>GT School</td>
+                                <td><span class="badge badge-danger">-31 pts</span></td>
+                                <td><span class="badge badge-danger">-0.50x</span></td>
+                                <td>N/A</td>
+                                <td>Largest summer loss</td>
+                            </tr>
+                            <tr>
+                                <td>Ethan Bale</td>
+                                <td>Alpha Brownsville</td>
+                                <td><span class="badge badge-danger">-24 pts</span></td>
+                                <td><span class="badge badge-danger">0.79x</span></td>
+                                <td>N/A</td>
+                                <td>Large summer loss</td>
+                            </tr>
+                            <tr>
+                                <td>Rivers Yong</td>
+                                <td>Alpha Austin</td>
+                                <td><span class="badge badge-danger">-18 pts</span></td>
+                                <td><span class="badge badge-success">2.23x</span></td>
+                                <td>+18 pts</td>
+                                <td>Recovered well</td>
+                            </tr>
+                            <tr>
+                                <td>Anthem Thomas</td>
+                                <td>Alpha Austin</td>
+                                <td><span class="badge badge-danger">-17 pts</span></td>
+                                <td><span class="badge badge-warning">1.50x</span></td>
+                                <td>+10 pts</td>
+                                <td>Large summer loss</td>
+                            </tr>
+                            <tr>
+                                <td>Victoria Leal</td>
+                                <td>Alpha Brownsville</td>
+                                <td><span class="badge badge-danger">-15 pts</span></td>
+                                <td><span class="badge badge-warning">1.22x</span></td>
+                                <td>+5 pts</td>
+                                <td>Large summer loss</td>
+                            </tr>
+                            <tr>
+                                <td>Blake Price</td>
+                                <td>Alpha Austin</td>
+                                <td><span class="badge badge-warning">-13 pts</span></td>
+                                <td><span class="badge badge-warning">1.77x</span></td>
+                                <td>+15 pts</td>
+                                <td>Recovering</td>
+                            </tr>
+                            <tr>
+                                <td>Raphael Shinar</td>
+                                <td>Alpha Austin</td>
+                                <td><span class="badge badge-warning">-11 pts</span></td>
+                                <td><span class="badge badge-danger">0.36x</span></td>
+                                <td>+2 pts</td>
+                                <td>Not recovering</td>
+                            </tr>
+                            <tr>
+                                <td>Gia Clark</td>
+                                <td>Alpha Austin</td>
+                                <td><span class="badge badge-warning">-10 pts</span></td>
+                                <td><span class="badge badge-danger">0.67x</span></td>
+                                <td>+1 pt</td>
+                                <td>Not recovering</td>
+                            </tr>
+                            <tr>
+                                <td>Jimmy Moore</td>
+                                <td>Alpha Austin</td>
+                                <td>-3 pts</td>
+                                <td><span class="badge badge-danger">0.31x</span></td>
+                                <td>+8 pts</td>
+                                <td>Very low W-W</td>
+                            </tr>
+                            <tr>
+                                <td>Arden McCord</td>
+                                <td>Alpha Austin</td>
+                                <td>-1 pt</td>
+                                <td><span class="badge badge-danger">0.69x</span></td>
+                                <td>+10 pts</td>
+                                <td>Low W-W</td>
+                            </tr>
+                            <tr>
+                                <td>Vivian Ajouz</td>
+                                <td>Alpha Austin</td>
+                                <td>-1 pt</td>
+                                <td><span class="badge badge-danger">0.58x</span></td>
+                                <td>+9 pts</td>
+                                <td>Low W-W</td>
+                            </tr>
+                            <tr>
+                                <td>Reed Robertson</td>
+                                <td>Alpha Austin</td>
+                                <td>+5 pts (gained)</td>
+                                <td><span class="badge badge-danger">0.67x</span></td>
+                                <td>0 pts</td>
+                                <td>No Spring→Winter gain</td>
+                            </tr>
+                            <tr>
+                                <td>Elijah Knecht</td>
+                                <td>Alpha Austin</td>
+                                <td>-5 pts</td>
+                                <td><span class="badge badge-warning">1.25x</span></td>
+                                <td>0 pts</td>
+                                <td>No Spring→Winter gain</td>
+                            </tr>
+                            <tr>
+                                <td>Aiden Richardson</td>
+                                <td>Alpha Austin</td>
+                                <td>-4 pts</td>
+                                <td><span class="badge badge-warning">1.18x</span></td>
+                                <td><span class="badge badge-danger">-1 pt</span></td>
+                                <td>Losing ground</td>
+                            </tr>
+                            <tr>
+                                <td>Bash Salazar</td>
+                                <td>Alpha Brownsville</td>
+                                <td>0 pts</td>
+                                <td><span class="badge badge-danger">0.50x</span></td>
+                                <td>+3 pts</td>
+                                <td>Very low W-W</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--gray-600);"><strong>Note:</strong> Summer Drop shows RIT points lost (negative = loss). Students who lost >10 points over summer AND have low W-W growth are highest priority for intervention.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Nova Academy Austin - All Students</div>
+                <div class="card-body">
+                    <p style="margin-bottom: 1rem; color: var(--gray-600);">Nova Austin has the lowest F-W growth (1.10x avg) of any campus. All students need review.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>F-W Growth</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>All Nova Austin Early Years students (n=11)</td>
+                                <td><span class="badge badge-danger">1.10x avg</span></td>
+                                <td>Immediate campus-wide investigation needed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // No chart needed - simplified
+    </script>
+</body>
+</html>
