@@ -19,164 +19,55 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-            line-height: 1.6;
-        }
-
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-50); color: var(--gray-800); line-height: 1.6; }
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, #0e7490 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
+        header { background: linear-gradient(135deg, var(--primary) 0%, #0e7490 100%); color: white; padding: 2rem; border-radius: 1rem; margin-bottom: 1.5rem; }
         header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
         header p { opacity: 0.9; }
-        .badge-new {
-            display: inline-block;
-            background: #fbbf24;
-            color: #1f2937;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background: white;
-            border: 2px solid var(--gray-100);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
+        .update-info { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.9; }
+        .update-info span { background: rgba(255,255,255,0.2); padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tab { padding: 0.75rem 1.5rem; background: white; border: 2px solid var(--gray-100); border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s; }
         .tab:hover { border-color: var(--primary); }
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-
         .section { display: none; }
         .section.active { display: block; }
-
-        .card {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: var(--gray-100);
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
+        .card { background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; overflow: hidden; }
+        .card-header { background: var(--gray-100); padding: 1rem 1.5rem; font-weight: 600; font-size: 1.1rem; }
         .card-body { padding: 1.5rem; }
-
-        .metric-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .metric {
-            text-align: center;
-            padding: 1.5rem;
-            background: var(--gray-50);
-            border-radius: 0.5rem;
-        }
-
-        .metric .value {
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-
-        .metric .label {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-            margin-top: 0.25rem;
-        }
-
+        .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .metric { text-align: center; padding: 1.5rem; background: var(--gray-50); border-radius: 0.5rem; }
+        .metric .value { font-size: 2.5rem; font-weight: 700; }
+        .metric .label { color: var(--gray-600); font-size: 0.9rem; margin-top: 0.25rem; }
         .success { color: var(--success); }
         .warning { color: var(--warning); }
         .danger { color: var(--danger); }
         .primary { color: var(--primary); }
-
-        .success-box {
-            background: #d1fae5;
-            border-left: 4px solid var(--success);
-            padding: 1rem 1.5rem;
-            border-radius: 0 0.5rem 0.5rem 0;
-            margin-bottom: 1rem;
-        }
-
-        .warning-box {
-            background: #fef3c7;
-            border-left: 4px solid var(--warning);
-            padding: 1rem 1.5rem;
-            border-radius: 0 0.5rem 0.5rem 0;
-            margin-bottom: 1rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-100);
-        }
-
+        .success-box { background: #d1fae5; border-left: 4px solid var(--success); padding: 1rem 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1rem; }
+        .warning-box { background: #fef3c7; border-left: 4px solid var(--warning); padding: 1rem 1.5rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--gray-100); }
         th { background: var(--gray-50); font-weight: 600; }
-
         tr:hover { background: var(--gray-50); }
-
-        .badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
+        .badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 500; }
         .badge-success { background: #d1fae5; color: #065f46; }
         .badge-warning { background: #fef3c7; color: #92400e; }
         .badge-danger { background: #fee2e2; color: #991b1b; }
-
         .danger-row { background: #fee2e2 !important; }
-
-        @media (max-width: 768px) {
-            .metric-grid { grid-template-columns: 1fr 1fr; }
-        }
+        @media (max-width: 768px) { .metric-grid { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>G3+ Reading Results <span class="badge-new">Updated Feb 4</span></h1>
+            <h1>G3+ Reading Results</h1>
             <p>Winter 2026 MAP Analysis | Students in Grades 3+ Reading Curriculum</p>
+            <div class="update-info">
+                <span>📅 Updated: 5 Feb 2026, 3:11pm AEST</span>
+                <span>📊 Results: 153 (+0)</span>
+            </div>
         </header>
 
-        <!-- Note -->
         <div class="card" style="border: 2px solid var(--primary); margin-bottom: 1.5rem;">
             <div class="card-body" style="background: #e0f2fe; padding: 1rem 1.5rem;">
                 <p style="margin: 0;"><strong>Note:</strong> This report covers G3+ Reading students (MS/HS level). See also: <a href="index.html" style="color: #0e7490; font-weight: 600;">EY Reading Report</a> | <a href="ey_language_report.html" style="color: #0e7490; font-weight: 600;">EY Language Report</a></p>
@@ -189,10 +80,7 @@
             <button class="tab" onclick="showSection('deepdive')">Students for Deep Dive</button>
         </div>
 
-        <!-- EXECUTIVE SUMMARY TAB -->
         <div id="summary" class="section active">
-
-            <!-- Key Metrics -->
             <div class="card">
                 <div class="card-header">Key Results at a Glance</div>
                 <div class="card-body">
@@ -214,11 +102,10 @@
                             <div class="label">Met 2x W-W Target</div>
                         </div>
                     </div>
-                    <p style="margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;">153 students have F-W growth data; 59 students have W-W growth data.</p>
+                    <p style="margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;">153 students have F-W growth data (+0 since last report); 59 students have W-W growth data.</p>
                 </div>
             </div>
 
-            <!-- Performance Summary -->
             <div class="card">
                 <div class="card-header" style="background: #fef3c7;">G3+ Reading Performance</div>
                 <div class="card-body">
@@ -234,22 +121,12 @@
             </div>
         </div>
 
-        <!-- CAMPUS BREAKDOWN TAB -->
         <div id="campus" class="section">
             <div class="card">
                 <div class="card-header">Campus Performance Summary</div>
                 <div class="card-body">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Campus</th>
-                                <th>Students</th>
-                                <th>F-W Data</th>
-                                <th>Median F-W</th>
-                                <th>Met 2x F-W</th>
-                                <th>Met 2x W-W</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Campus</th><th>Students</th><th>F-W Data</th><th>Median F-W</th><th>Met 2x F-W</th><th>Met 2x W-W</th></tr></thead>
                         <tbody>
                             <tr>
                                 <td>Alpha Anywhere Center</td>
@@ -385,20 +262,12 @@
             </div>
         </div>
 
-        <!-- DEEP DIVE TAB -->
         <div id="deepdive" class="section">
             <div class="card">
                 <div class="card-header">Students with F-W Growth &lt; 1.5x (showing first 30)</div>
                 <div class="card-body">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Campus</th>
-                                <th>Level</th>
-                                <th>F-W Growth</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Student</th><th>Campus</th><th>Level</th><th>F-W Growth</th></tr></thead>
                         <tbody>
                             <tr>
                                 <td>Tanner Klentz</td>
@@ -579,156 +448,6 @@
                                 <td>Alpha School Fort Worth</td>
                                 <td>MS</td>
                                 <td><span class="badge badge-danger">-2.00x</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">Students with W-W Growth &lt; 1.0x</div>
-                <div class="card-body">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Campus</th>
-                                <th>Level</th>
-                                <th>W-W Growth</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Stone Meyers</td>
-                                <td>Texas Sports Academy</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-9.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Eddie Margain-Junco</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-5.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Ross Margraves</td>
-                                <td>Alpha High School</td>
-                                <td>HS</td>
-                                <td><span class="badge badge-danger">-5.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Adrienne Laswell</td>
-                                <td>Alpha High School</td>
-                                <td>HS</td>
-                                <td><span class="badge badge-danger">-4.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Byron Attridge</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-4.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Rania Caberwal</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-3.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Jacob Kuchinsky</td>
-                                <td>Alpha High School</td>
-                                <td>HS</td>
-                                <td><span class="badge badge-danger">-2.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Zayen Szpitalak</td>
-                                <td>Alpha High School</td>
-                                <td>HS</td>
-                                <td><span class="badge badge-danger">-2.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Grey Walker</td>
-                                <td>Alpha High School</td>
-                                <td>HS</td>
-                                <td><span class="badge badge-danger">-2.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Sander Gabler</td>
-                                <td>Alpha School Brownsville</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-2.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Armin Rouwet</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-2.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Love Lalla-Pagan</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-2.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Jack Cotner</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-1.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Rocco Benetti</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-1.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Kai Sticker</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-1.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Lulu Bressan</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-1.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Rhys Björendahl</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">-0.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Aksel Jensen</td>
-                                <td>Texas Sports Academy</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">0.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Sydney Barba</td>
-                                <td>Alpha School Miami</td>
-                                <td>HS</td>
-                                <td><span class="badge badge-danger">0.00x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Evelyn Gabler</td>
-                                <td>Alpha School Brownsville</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">0.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Aileya Klinefelter</td>
-                                <td>Alpha School Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">0.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Jalayah Washington</td>
-                                <td>Nova Academy Austin</td>
-                                <td>MS</td>
-                                <td><span class="badge badge-danger">0.60x</span></td>
                             </tr>
                         </tbody>
                     </table>

@@ -49,6 +49,20 @@
             font-weight: 600;
             margin-left: 0.5rem;
         }
+        
+        .update-info {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .update-info span {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
 
         .tabs {
             display: flex;
@@ -172,8 +186,12 @@
 <body>
     <div class="container">
         <header>
-            <h1>Early Years Reading Results <span class="badge-new">Updated Feb 4</span></h1>
+            <h1>Early Years Reading Results</h1>
             <p>Winter 2026 MAP Analysis | Students with Rostered Grade K-2</p>
+            <div class="update-info">
+                <span>📅 Updated: 5 Feb 2026, 3:11pm AEST</span>
+                <span>📊 Results: 180 (+5)</span>
+            </div>
         </header>
 
         <!-- Note -->
@@ -202,11 +220,11 @@
                             <div class="label">EY Reading Students (Rostered K-2)</div>
                         </div>
                         <div class="metric">
-                            <div class="value success">83%</div>
+                            <div class="value success">84%</div>
                             <div class="label">Met 2x F-W Target</div>
                         </div>
                         <div class="metric">
-                            <div class="value success">3.00x</div>
+                            <div class="value success">3.29x</div>
                             <div class="label">Median F-W Growth</div>
                         </div>
                         <div class="metric">
@@ -214,7 +232,7 @@
                             <div class="label">Met 2x W-W Target</div>
                         </div>
                     </div>
-                    <p style="margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;">175 students have F-W growth data; 48 students have W-W growth data.</p>
+                    <p style="margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;">180 students have F-W growth data (+5 since last report); 48 students have W-W growth data.</p>
                 </div>
             </div>
 
@@ -226,8 +244,9 @@
                         <h4>Strong Fall-to-Winter Performance</h4>
                         <p style="margin-top: 0.5rem;">Early Years Reading students are showing excellent Fall-to-Winter growth:</p>
                         <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
-                            <li><strong>83%</strong> met the 2x growth target (146 of 175 students)</li>
-                            <li>Median F-W growth: <strong>3.00x</strong></li>
+                            <li><strong>84%</strong> met the 2x growth target (152 of 180 students)</li>
+                            <li>Median F-W growth: <strong>3.29x</strong></li>
+                            <li><strong>17 retakes completed</strong> - all improved their scores (avg +6.5 RIT)</li>
                         </ul>
                         <p style="margin-top: 0.5rem;">The remaining challenge is <strong>summer learning loss</strong> affecting W-W results (18% met 2x W-W).</p>
                     </div>
@@ -267,16 +286,16 @@
                                 <td>Alpha Anywhere Center</td>
                                 <td>12</td>
                                 <td>11</td>
-                                <td><span class="badge badge-success">3.33x</span></td>
+                                <td><span class="badge badge-success">3.38x</span></td>
                                 <td><span class="badge badge-success">90%</span></td>
                                 <td>N/A</td>
                             </tr>
                             <tr>
                                 <td>Alpha School Austin</td>
                                 <td>49</td>
-                                <td>41</td>
-                                <td><span class="badge badge-success">3.67x</span></td>
-                                <td><span class="badge badge-success">85%</span></td>
+                                <td>44</td>
+                                <td><span class="badge badge-success">3.83x</span></td>
+                                <td><span class="badge badge-success">88%</span></td>
                                 <td>1/21</td>
                             </tr>
                             <tr>
@@ -317,6 +336,14 @@
                                 <td>4</td>
                                 <td><span class="badge badge-warning">2.48x</span></td>
                                 <td><span class="badge badge-success">100%</span></td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr class="danger-row">
+                                <td>Alpha School Plano</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td><span class="badge badge-danger">1.68x</span></td>
+                                <td><span class="badge badge-danger">50%</span></td>
                                 <td>N/A</td>
                             </tr>
                             <tr>
@@ -380,7 +407,7 @@
                                 <td>8</td>
                                 <td>7</td>
                                 <td><span class="badge badge-success">3.67x</span></td>
-                                <td><span class="badge badge-success">85%</span></td>
+                                <td><span class="badge badge-success">100%</span></td>
                                 <td>N/A</td>
                             </tr>
                             <tr>
@@ -420,12 +447,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Leila Abony</td>
-                                <td>Alpha School Austin</td>
-                                <td>0</td>
-                                <td><span class="badge badge-danger">-2.00x</span></td>
-                            </tr>
                             <tr>
                                 <td>Mila Tinkler</td>
                                 <td>Alpha School Scottsdale</td>
@@ -469,21 +490,15 @@
                                 <td><span class="badge badge-danger">0.33x</span></td>
                             </tr>
                             <tr>
-                                <td>Hayes Burman</td>
-                                <td>Alpha School Austin</td>
-                                <td>0</td>
-                                <td><span class="badge badge-danger">0.40x</span></td>
+                                <td>Rafaela Almanza</td>
+                                <td>Alpha School Brownsville</td>
+                                <td>1</td>
+                                <td><span class="badge badge-danger">0.50x</span></td>
                             </tr>
                             <tr>
                                 <td>Bash Salazar</td>
                                 <td>Alpha School Brownsville</td>
                                 <td>0</td>
-                                <td><span class="badge badge-danger">0.50x</span></td>
-                            </tr>
-                            <tr>
-                                <td>Rafaela Almanza</td>
-                                <td>Alpha School Brownsville</td>
-                                <td>1</td>
                                 <td><span class="badge badge-danger">0.50x</span></td>
                             </tr>
                             <tr>
@@ -499,12 +514,6 @@
                                 <td><span class="badge badge-warning">1.00x</span></td>
                             </tr>
                             <tr>
-                                <td>Analea Lopez</td>
-                                <td>Nova Academy Bastrop</td>
-                                <td>1</td>
-                                <td><span class="badge badge-warning">1.00x</span></td>
-                            </tr>
-                            <tr>
                                 <td>Savi Richardson</td>
                                 <td>Alpha School Austin</td>
                                 <td>0</td>
@@ -515,6 +524,18 @@
                                 <td>Alpha School Miami</td>
                                 <td>2</td>
                                 <td><span class="badge badge-warning">1.12x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Hayes Burman</td>
+                                <td>Alpha School Austin</td>
+                                <td>0</td>
+                                <td><span class="badge badge-warning">1.20x</span></td>
+                            </tr>
+                            <tr>
+                                <td>Sofia Stone</td>
+                                <td>Alpha School Plano</td>
+                                <td>1</td>
+                                <td><span class="badge badge-warning">1.25x</span></td>
                             </tr>
                             <tr>
                                 <td>King Fluckers</td>
